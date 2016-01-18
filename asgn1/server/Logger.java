@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
- * A class used to logging information. The default is too only log errors and info.
+ * A class used to logging information. The default is to only log errors and info.
  * To log debug information than change the mode to Debug of the logger.
  * @author Dallas Fraser - 110242560
- * @author George Lifchits - XXXXXXXX
+ * @author George Lifchits - 100691350
  * @version 1.0
  */
 public class Logger {

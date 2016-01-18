@@ -6,7 +6,7 @@ import java.net.* ;
 /**
  * The Server object used to process HTTP requests.
  * @author Dallas Fraser - 110242560
- * @author George Lifchits - XXXXXXXX
+ * @author George Lifchits - 100691350
  * @version 1.0
  * @see Class#Synonyms
  */

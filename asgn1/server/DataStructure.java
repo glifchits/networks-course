@@ -13,7 +13,7 @@ import java.util.LinkedList;
  * HashMap where each key is a word and the values is a LinkedList of its
  * synonyms.
  * @author Dallas Fraser - 110242560
- * @author George Lifchits - XXXXXXXX
+ * @author George Lifchits - 100691350
  * @version 1.0
  * @see Class#HashMap
  * @see Class#LinkedList
@@ -21,11 +21,11 @@ import java.util.LinkedList;
 public class DataStructure {
 	private HashMap<String, LinkedList<String>> data;
 	private Logger logger;
+	
 	/**
 	 * The default constructor. It uses the default logger
 	 */
 	public DataStructure() {
-		// TODO Auto-generated constructor stub
 		this.data = new HashMap <String, LinkedList<String>>(20);
 		this.logger = new Logger();
 	}
