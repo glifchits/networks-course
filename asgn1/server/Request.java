@@ -74,28 +74,37 @@ public class Request implements Runnable {
     private void setRequest(StringTokenizer tokenizer) throws Exception {
     	String word = null;
     	String match = null;
-    	String result = null;
     	String statusLine = null;
     	String contentTypeLine = null;
     	String entityBody = null;
     	try{
     		word = tokenizer.nextToken();
     		match = tokenizer.nextToken();
-    		result = this.data.addPair(word, match);
-    		statusLine = "HTTP/1.0 200 Successful";
-			contentTypeLine = "Content-Type: text/html";
-			entityBody = result;		
-    	}
-    	catch (NoSuchElementException e){
+    		this.data.addPair(word, match);
+    		statusLine = "HTTP/1.0 200 Successful" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "";		
+    	}catch (NoSuchElementException e){
 			//  invalid request
-			statusLine = "HTTP/1.0 400 Bad Request";
-			contentTypeLine = "Content-Type: text/html";
+			statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = "Missing parameter";
+    	}catch (NullPointerException e){
+    		//  invalid request
+    		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+    		contentTypeLine = "Content-Type: text/html" + CRLF;
+    		entityBody = word + " was not found";
+    	}catch (Exception e){
+    		//  invalid request
+    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+    		contentTypeLine = "Content-Type: text/html" + CRLF;
+    		entityBody = "Unknown error";
     	}
 		this.os.writeBytes(statusLine);
 		this.os.writeBytes(contentTypeLine);
 		this.os.writeBytes(CRLF);
 		this.os.writeBytes(entityBody);
+		this.os.writeBytes(CRLF);
     }
 
     /**
@@ -112,26 +121,24 @@ public class Request implements Runnable {
     	try{
     		word = tokenizer.nextToken();
     		result = this.data.getPair(word);
-    		if (result == null){
-    			statusLine = "HTTP/1.0 404 Not found";
-    			contentTypeLine = "Content-Type: text/html";
-    			entityBody = word + " -  was not found";
-    		}else{
-    			statusLine = "HTTP/1.0 200 Successful";
-    			contentTypeLine = "Content-Type: text/html";
-    			entityBody = result;
-    		}		
-    	}
-    	catch (NoSuchElementException e){
+    		statusLine = "HTTP/1.0 200 Successful" + CRLF;
+    		contentTypeLine = "Content-Type: text/html" ;
+    		entityBody = result;
+    	}catch (NoSuchElementException e){
 			//  invalid request
-    		statusLine = "HTTP/1.0 400 Bad Request";
-			contentTypeLine = "Content-Type: text/html";
+    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = "Missing parameter(s)";
+    	}catch (NullPointerException e){
+			statusLine = "HTTP/1.0 404 Not found" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = word + " was not found";
     	}
 		this.os.writeBytes(statusLine);
 		this.os.writeBytes(contentTypeLine);
 		this.os.writeBytes(CRLF);
 		this.os.writeBytes(entityBody);
+		this.os.writeBytes(CRLF);
     }
 
     /**
@@ -141,27 +148,29 @@ public class Request implements Runnable {
      */
     private void removeRequest(StringTokenizer tokenizer) throws Exception{
     	String word = null;
-    	String result = null;
     	String statusLine = null;
     	String contentTypeLine = null;
     	String entityBody = null;
     	try{
     		word = tokenizer.nextToken();
-    		result = this.data.removePair(word);
-    		statusLine = "HTTP/1.0 200 Successful";
-			contentTypeLine = "Content-Type: text/html";
-			entityBody = result;		
-    	}
-    	catch (NoSuchElementException e){
+    		this.data.removePair(word);
+    		statusLine = "HTTP/1.0 200 Successful" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "";
+    	}catch (NoSuchElementException e){
 			//  invalid request
-			statusLine = "HTTP/1.0 400 Bad Request";
-			contentTypeLine = "Content-Type: text/html";
+			statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = "Missing parameter";
+    	}catch (NullPointerException e){
+			statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = word + " was not found";
     	}
 		this.os.writeBytes(statusLine);
 		this.os.writeBytes(contentTypeLine);
 		this.os.writeBytes(CRLF);
-		this.os.writeBytes(entityBody);	
+		this.os.writeBytes(entityBody);
     }
 
     /**
@@ -192,8 +201,8 @@ public class Request implements Runnable {
 			this.removeRequest(tokens);
 		}else{
 			//  invalid request
-			String statusLine = "HTTP/1.0 405 Method Not Allowed ";
-			String contentTypeLine = "Content-Type: text/html";
+			String statusLine = "HTTP/1.0 405 Method Not Allowed" + CRLF;
+			String contentTypeLine = "Content-Type: text/html" + CRLF;
 			String entityBody = "Method requested is not allowed";
 			this.os.writeBytes(statusLine);
 			this.os.writeBytes(contentTypeLine);
@@ -205,4 +214,82 @@ public class Request implements Runnable {
 		br.close();
 		this.socket.close();
     }
+    /**
+     * a set method to set output stream. Just used to mock requests
+     * @param os - the output stream (DataOutputStream)
+     */
+    public void setOS(DataOutputStream os){
+    	this.os = os;
+    }
+
+	/**
+	 * The main function. It is used for testing purposes
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		// TODO Auto-generated method stub
+		/*
+		 * SET requests
+		 */
+		Logger lg = new Logger(0);
+		Synonyms syn = new Synonyms(lg);
+		// mock request
+		Request r = new Request(new Socket(), syn, lg);
+	    // set to output to console
+		DataOutputStream writer = new DataOutputStream(System.out);
+		r.setOS(writer);
+		StringTokenizer st = new StringTokenizer("Hello");
+		try{
+			// bad request
+			System.out.println("SET: Sending bad request");
+			r.setRequest(st);
+			System.out.println("-------------------");
+			// good request
+			System.out.println("SET: Sending Good request");
+			st = new StringTokenizer("Hello Hi", " ");
+			r.setRequest(st);
+			System.out.println("-------------------");
+		}catch (Exception e){
+			lg.error(e.getMessage());
+		}
+		/*
+		 *  GET Requests
+		 */
+		try{
+			// good request
+			System.out.println("GET: Sending Good request");
+			st = new StringTokenizer("Hello");
+			r.getRequest(st);
+			System.out.println("-------------------");
+			System.out.println("GET: Sending Bad request");
+			st = new StringTokenizer("FUCKER");
+			r.getRequest(st);
+			System.out.println("-------------------");
+		}catch (Exception e){
+			lg.error(e.getMessage());
+		}
+		
+		/*
+		 * REMOVE requests
+		 */
+		try{
+			// bad request
+			System.out.println("REMOVE: Sending Bad request");
+			st = new StringTokenizer("FUCKER");
+			r.removeRequest(st);
+			System.out.println("-------------------");
+			System.out.println("REMOVE: Sending Good request");
+			st = new StringTokenizer("Hello");
+			r.removeRequest(st);
+			System.out.println("-------------------");
+			// checking if remove worked
+			System.out.println("REMOVE: Checking if Hello removed");
+			st = new StringTokenizer("Hello");
+			r.getRequest(st);
+			System.out.println("-------------------");
+		}catch(Exception e){
+			lg.error(e.getMessage());
+		}
+	}
 }
