@@ -1,9 +1,4 @@
 /**
- * 
- */
-package server;
-
-/**
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - XXXXXXXX
  * @version 1.0
