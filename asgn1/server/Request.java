@@ -37,6 +37,7 @@ public class Request implements Runnable {
 	private DataOutputStream os;
 	private Synonyms data;
 	private Logger logger;
+	private BufferedReader br;
 	/**
 	 * the only constructor
 	 * @param socket the socket of the request (Socket)
@@ -55,17 +56,17 @@ public class Request implements Runnable {
 		this.data = syn;
 		this.logger = logger;
 	}
-
     // Implement the run() method of the Runnable interface.
-	/**
-	 * a Runnable interface
-	 */
+    /**
+     * a Runnable interface
+     */
     public void run() {
-		try {
-			processRequest();
-		} catch (Exception e) {
-			this.logger.error(e.getMessage());
-		}
+	
+	try {
+	    this.processRequest();
+	} catch (Exception e) {
+	    this.logger.error(e.getMessage());
+	}
     }
 
     /**
@@ -85,15 +86,15 @@ public class Request implements Runnable {
     		if (tokenizer.hasMoreTokens()){
     			throw new InvalidParametersException("Too many Parameters");
     		}
-    		this.data.addPair(word, match);
+    		this.data.addPair(word.toLowerCase(), match.toLowerCase());
     		statusLine = "HTTP/1.0 201 Created" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "";		
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "";		
     	}catch (NoSuchElementException e){
-			//  invalid request
-			statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Missing parameter";
+		//  invalid request
+		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Missing parameter";
     	}catch (NullPointerException e){
     		//  invalid request
     		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
@@ -101,23 +102,23 @@ public class Request implements Runnable {
     		entityBody = word + " was not found";
     	}catch(InterruptedException e){
     		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "";
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "";
     	}catch (InvalidParametersException e){
-			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Too many parameters";
-		}catch (Exception e){
+		statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Too many parameters";
+	}catch (Exception e){
     		//  invalid request
     		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
     		entityBody = "Unknown error";
     	}
-		this.os.writeBytes(statusLine);
-		this.os.writeBytes(contentTypeLine);
-		this.os.writeBytes(CRLF);
-		this.os.writeBytes(entityBody);
-		this.os.writeBytes(CRLF);
+	this.os.writeBytes(statusLine);
+	this.os.writeBytes(contentTypeLine);
+	this.os.writeBytes(CRLF);
+	this.os.writeBytes(entityBody);
+	this.os.writeBytes(CRLF);
     }
 
     /**
@@ -126,48 +127,48 @@ public class Request implements Runnable {
      * @throws Exception
      */
     private void getRequest(StringTokenizer tokenizer) throws Exception{
-    	String word = null;
-    	String result = null;
-    	String statusLine = null;
-    	String contentTypeLine = null;
-    	String entityBody = null;
-    	try{
-    		word = tokenizer.nextToken();
-    		if (tokenizer.hasMoreTokens()){
-    			throw new InvalidParametersException("Too many Parameters");
-    		}
-    		result = this.data.getPair(word);
-    		statusLine = "HTTP/1.0 200 Successful" + CRLF;
-    		contentTypeLine = "Content-Type: text/html" ;
-    		entityBody = result;
-    	}catch (NoSuchElementException e){
-			//  invalid request
-    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Missing parameter(s)";
-    	}catch (NullPointerException e){
-			statusLine = "HTTP/1.0 404 Not found" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = word + " was not found";
-    	}catch(InterruptedException e){
-    		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "";
-    	}catch (InvalidParametersException e){
-			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Too many parameters";
-		}catch (Exception e){
-    		//  unknown error
-    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
-    		contentTypeLine = "Content-Type: text/html" + CRLF;
-    		entityBody = "Unknown error";
-    	}
-		this.os.writeBytes(statusLine);
-		this.os.writeBytes(contentTypeLine);
-		this.os.writeBytes(CRLF);
-		this.os.writeBytes(entityBody);
-		this.os.writeBytes(CRLF);
+	String word = null;
+	String result = null;
+	String statusLine = null;
+	String contentTypeLine = null;
+	String entityBody = null;
+	try{
+		word = tokenizer.nextToken();
+		if (tokenizer.hasMoreTokens()){
+			throw new InvalidParametersException("Too many Parameters");
+		}
+		result = this.data.getPair(word.toLowerCase());
+		statusLine = "HTTP/1.0 200 Successful" + CRLF;
+		contentTypeLine = "Content-Type: text/html" ;
+		entityBody = result;
+	}catch (NoSuchElementException e){
+		//  invalid request
+		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Missing parameter(s)";
+	}catch (NullPointerException e){
+		statusLine = "HTTP/1.0 404 Not found" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = word + " was not found";
+	}catch(InterruptedException e){
+		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "";
+	}catch (InvalidParametersException e){
+		statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Too many parameters";
+	}catch (Exception e){
+		//  unknown error
+		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Unknown error";
+	}
+	this.os.writeBytes(statusLine);
+	this.os.writeBytes(contentTypeLine);
+	this.os.writeBytes(CRLF);
+	this.os.writeBytes(entityBody);
+	this.os.writeBytes(CRLF);
     }
 
     /**
@@ -185,65 +186,72 @@ public class Request implements Runnable {
     		if (tokenizer.hasMoreTokens()){
     			throw new InvalidParametersException("Too many Parameters");
     		}
-    		this.data.removePair(word);
+    		this.data.removePair(word.toLowerCase());
     		statusLine = "HTTP/1.0 200 Successful" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "";
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "";
     	}catch (NoSuchElementException e){
-			//  invalid request
-			statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Missing parameter";
+		//  invalid request
+		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Missing parameter";
     	}catch (NullPointerException e){
-			statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = word + " was not found";
-		}catch(InterruptedException e){
-			statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "";
-		}catch (InvalidParametersException e){
-			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
-			contentTypeLine = "Content-Type: text/html" + CRLF;
-			entityBody = "Too many parameters";
-		}catch (Exception e){
-    		//  unknown error
-    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
-    		contentTypeLine = "Content-Type: text/html" + CRLF;
-    		entityBody = "Unknown error";
+		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = word + " was not found";
+	}catch(InterruptedException e){
+		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "";
+	}catch (InvalidParametersException e){
+		statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Too many parameters";
+	}catch (Exception e){
+		//  unknown error
+		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
+		entityBody = "Unknown error";
 		}
-		this.os.writeBytes(statusLine);
-		this.os.writeBytes(contentTypeLine);
-		this.os.writeBytes(CRLF);
-		this.os.writeBytes(entityBody);
+	this.os.writeBytes(statusLine);
+	this.os.writeBytes(contentTypeLine);
+	this.os.writeBytes(CRLF);
+	this.os.writeBytes(entityBody);
     }
 
     /**
      * a method to process all requests
      * @throws Exception
+     * @return done tells whether the process is done or not (boolean)
      */
-    private void processRequest() throws Exception {
-		// Get a reference to the socket's input and output streams.
-		InputStream is = this.socket.getInputStream();
-		this.os = new DataOutputStream(this.socket.getOutputStream());
-		// Set up input stream filters.
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		// Get the request line of the request message.
-		String requestLine = br.readLine();
+    private boolean processRequest() throws Exception {
+	// Get a reference to the socket's input and output streams
+	InputStream is = this.socket.getInputStream();
+	this.os = new DataOutputStream(this.socket.getOutputStream());
+	// Set up input stream filters.
+	this.br = new BufferedReader(new InputStreamReader(is));
+	// Get the request line of the request message.
+	boolean done = false;
+	String requestLine = br.readLine();
+	while (requestLine.length() != 0 && !done){
+		this.logger.info(requestLine);
 		// Extract the filename from the request line.
 		StringTokenizer tokens = new StringTokenizer(requestLine);
 		String method = tokens.nextToken();
 		// Debug info for private use
 		this.logger.debug("Incoming!!!");
-		this.logger.debug("Incoming!!!");
 		this.logger.debug(requestLine);
-		this.logger.debug(br);
-		if (method.compareTo("GET") == 0){
+		this.logger.debug("Method: " + method );
+		if (method.toUpperCase().compareTo("GET") == 0){
 			this.getRequest(tokens);
-		}else if (method.compareTo("SET") == 0){
+		}else if (method.toUpperCase().compareTo("SET") == 0){
 			this.setRequest(tokens);
-		}else if(method.compareTo("REMOVE") == 0){
+		}else if(method.toUpperCase().compareTo("REMOVE") == 0){
 			this.removeRequest(tokens);
+		}else if (method.toUpperCase().compareTo("QUIT") == 0 || 
+				requestLine.length() == 0){
+		    done = true;
+		    this.logger.debug("Closing connection");
 		}else{
 			//  invalid request
 			String statusLine = "HTTP/1.0 405 Method Not Allowed" + CRLF;
@@ -253,11 +261,16 @@ public class Request implements Runnable {
 			this.os.writeBytes(contentTypeLine);
 			this.os.writeBytes(CRLF);
 			this.os.writeBytes(entityBody);
+			this.os.writeBytes(CRLF);
 		}
-		// Close streams and socket.
-		this.os.close();
-		br.close();
-		this.socket.close();
+		requestLine = br.readLine();
+	}
+	// Close streams and socket.
+	this.os.writeBytes("Bye");
+	this.os.close();
+	br.close();
+	this.socket.close();
+	return done;
     }
     /**
      * a set method to set output stream. Just used to mock requests
@@ -267,98 +280,95 @@ public class Request implements Runnable {
     	this.os = os;
     }
 
-	/**
-	 * The main function. It is used for testing purposes
-	 * @param args
-	 * @throws Exception 
+    /**
+     * The main function. It is used for testing purposes
+     * @param args
+     * @throws Exception 
+     */
+    public static void main(String[] args) throws Exception {
+	// TODO Auto-generated method stub
+	/*
+	 * SET requests
 	 */
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		/*
-		 * SET requests
-		 */
-		Logger lg = new Logger(0);
-		Synonyms syn = new Synonyms(lg);
-		// mock request
-		Request r = new Request(new Socket(), syn, lg);
-	    // set to output to console
-		DataOutputStream writer = new DataOutputStream(System.out);
-		r.setOS(writer);
-		StringTokenizer st = new StringTokenizer("Hello");
-		try{
-			// bad request
-			System.out.println("SET: Sending bad request");
-			r.setRequest(st);
-			System.out.println("-------------------");
-			// good request
-			System.out.println("SET: Sending Good request");
-			st = new StringTokenizer("Hello Hi", " ");
-			r.setRequest(st);
-			System.out.println("-------------------");
-			System.out.println("SET: Sending request with too many parameters");
-			st = new StringTokenizer("Hello Hi FUCK", " ");
-			r.setRequest(st);
-			System.out.println("-------------------");
-			
-		}catch (Exception e){
-			lg.error(e.getMessage());
-		}
-		/*
-		 *  GET Requests
-		 */
-		try{
-			// good request
-			System.out.println("GET: Sending Good request");
-			st = new StringTokenizer("Hello");
-			r.getRequest(st);
-			System.out.println("-------------------");
-			System.out.println("GET: Sending Bad request");
-			st = new StringTokenizer("FUCKER");
-			r.getRequest(st);
-			System.out.println("-------------------");
-			System.out.println("GET: Sending request with too many parameters");
-			st = new StringTokenizer("GOAT FUCKER");
-			r.getRequest(st);
-			System.out.println("-------------------");
-		}catch (Exception e){
-			lg.error(e.getMessage());
-		}
-		
-		/*
-		 * REMOVE requests
-		 */
-		try{
-			// bad request
-			System.out.println("REMOVE: Sending Bad request");
-			st = new StringTokenizer("FUCKER");
-			r.removeRequest(st);
-			System.out.println("-------------------");
-			System.out.println("REMOVE: Sending Good request");
-			st = new StringTokenizer("Hello");
-			r.removeRequest(st);
-			System.out.println("-------------------");
-			System.out.println("REMOVE: sending request with too many parameters");
-			st = new StringTokenizer("GOAT FUCKER");
-			r.removeRequest(st);
-			System.out.println("-------------------");
-			// checking if remove worked
-			System.out.println("REMOVE: Checking if Hello removed");
-			st = new StringTokenizer("Hello");
-			r.getRequest(st);
-			System.out.println("-------------------");
-		}catch(Exception e){
-			lg.error(e.getMessage());
-		}
+	Logger lg = new Logger(0);
+	Synonyms syn = new Synonyms(lg);
+	// mock request
+	Request r = new Request(new Socket(), syn, lg);
+	// set to output to console
+	DataOutputStream writer = new DataOutputStream(System.out);
+	r.setOS(writer);
+	StringTokenizer st = new StringTokenizer("Hello");
+	try{
+		// bad request
+		System.out.println("SET: Sending bad request");
+		r.setRequest(st);
+		System.out.println("-------------------");
+		// good request
+		System.out.println("SET: Sending Good request");
+		st = new StringTokenizer("Hello Hi", " ");
+		r.setRequest(st);
+		System.out.println("-------------------");
+		System.out.println("SET: Sending request with too many parameters");
+		st = new StringTokenizer("Hello Hi FUCK", " ");
+		r.setRequest(st);
+		System.out.println("-------------------");
+	}catch (Exception e){
+		lg.error(e.getMessage());
 	}
-
-	public class InvalidParametersException extends Exception{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -6310136941733882114L;
-		public InvalidParametersException(String message){
-			super(message);
-		}
+	/*
+	 *  GET Requests
+	 */
+	try{
+		// good request
+		System.out.println("GET: Sending Good request");
+		st = new StringTokenizer("Hello");
+		r.getRequest(st);
+		System.out.println("-------------------");
+		System.out.println("GET: Sending Bad request");
+		st = new StringTokenizer("FUCKER");
+		r.getRequest(st);
+		System.out.println("-------------------");
+		System.out.println("GET: Sending request with too many parameters");
+		st = new StringTokenizer("GOAT FUCKER");
+		r.getRequest(st);
+		System.out.println("-------------------");
+	}catch (Exception e){
+		lg.error(e.getMessage());
 	}
+	/*
+	 * REMOVE requests
+	 */
+	try{
+		// bad request
+		System.out.println("REMOVE: Sending Bad request");
+		st = new StringTokenizer("FUCKER");
+		r.removeRequest(st);
+		System.out.println("-------------------");
+		System.out.println("REMOVE: Sending Good request");
+		st = new StringTokenizer("Hello");
+		r.removeRequest(st);
+		System.out.println("-------------------");
+		System.out.println("REMOVE: sending request with too many parameters");
+		st = new StringTokenizer("GOAT FUCKER");
+		r.removeRequest(st);
+		System.out.println("-------------------");
+		// checking if remove worked
+		System.out.println("REMOVE: Checking if Hello removed");
+		st = new StringTokenizer("Hello");
+		r.getRequest(st);
+		System.out.println("-------------------");
+	}catch(Exception e){
+		lg.error(e.getMessage());
+	}
+    }
 
+    public class InvalidParametersException extends Exception{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6310136941733882114L;
+	public InvalidParametersException(String message){
+		super(message);
+	}
+    }
 }

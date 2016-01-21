@@ -136,7 +136,7 @@ public class Synonyms{
 			if (this.reader.tryLock(3, TimeUnit.SECONDS)){
 				this.logger.debug("Get synonyms for word: "+ word);
 				matches = this.data.get(word);
-				this.logger.debug("Resulting synonyms for word"
+				this.logger.debug("Resulting synonyms for word: "
 									+ word + " - " + matches);
 			}
 		}catch (NullPointerException e){
