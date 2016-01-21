@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 import java.io.* ;
 import java.net.* ;
 import java.util.* ;
@@ -21,6 +25,8 @@ import java.util.* ;
  * @version 1.0
  * @see Class#Server
  */
+
+
 public class Request implements Runnable {
 	
 	/**
@@ -76,8 +82,11 @@ public class Request implements Runnable {
     	try{
     		word = tokenizer.nextToken();
     		match = tokenizer.nextToken();
+    		if (tokenizer.hasMoreTokens()){
+    			throw new InvalidParametersException("Too many Parameters");
+    		}
     		this.data.addPair(word, match);
-    		statusLine = "HTTP/1.0 200 Successful" + CRLF;
+    		statusLine = "HTTP/1.0 201 Created" + CRLF;
 			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = "";		
     	}catch (NoSuchElementException e){
@@ -90,7 +99,15 @@ public class Request implements Runnable {
     		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
     		entityBody = word + " was not found";
-    	}catch (Exception e){
+    	}catch(InterruptedException e){
+    		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "";
+    	}catch (InvalidParametersException e){
+			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "Too many parameters";
+		}catch (Exception e){
     		//  invalid request
     		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
@@ -116,6 +133,9 @@ public class Request implements Runnable {
     	String entityBody = null;
     	try{
     		word = tokenizer.nextToken();
+    		if (tokenizer.hasMoreTokens()){
+    			throw new InvalidParametersException("Too many Parameters");
+    		}
     		result = this.data.getPair(word);
     		statusLine = "HTTP/1.0 200 Successful" + CRLF;
     		contentTypeLine = "Content-Type: text/html" ;
@@ -129,6 +149,19 @@ public class Request implements Runnable {
 			statusLine = "HTTP/1.0 404 Not found" + CRLF;
 			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = word + " was not found";
+    	}catch(InterruptedException e){
+    		statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "";
+    	}catch (InvalidParametersException e){
+			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "Too many parameters";
+		}catch (Exception e){
+    		//  unknown error
+    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+    		contentTypeLine = "Content-Type: text/html" + CRLF;
+    		entityBody = "Unknown error";
     	}
 		this.os.writeBytes(statusLine);
 		this.os.writeBytes(contentTypeLine);
@@ -149,6 +182,9 @@ public class Request implements Runnable {
     	String entityBody = null;
     	try{
     		word = tokenizer.nextToken();
+    		if (tokenizer.hasMoreTokens()){
+    			throw new InvalidParametersException("Too many Parameters");
+    		}
     		this.data.removePair(word);
     		statusLine = "HTTP/1.0 200 Successful" + CRLF;
 			contentTypeLine = "Content-Type: text/html" + CRLF;
@@ -162,7 +198,20 @@ public class Request implements Runnable {
 			statusLine = "HTTP/1.0 404 Not Found" + CRLF;
 			contentTypeLine = "Content-Type: text/html" + CRLF;
 			entityBody = word + " was not found";
-    	}
+		}catch(InterruptedException e){
+			statusLine = "HTTP/1.0 408 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "";
+		}catch (InvalidParametersException e){
+			statusLine = "HTTP/1.0 400 Request Timeout" + CRLF;
+			contentTypeLine = "Content-Type: text/html" + CRLF;
+			entityBody = "Too many parameters";
+		}catch (Exception e){
+    		//  unknown error
+    		statusLine = "HTTP/1.0 400 Bad Request" + CRLF;
+    		contentTypeLine = "Content-Type: text/html" + CRLF;
+    		entityBody = "Unknown error";
+		}
 		this.os.writeBytes(statusLine);
 		this.os.writeBytes(contentTypeLine);
 		this.os.writeBytes(CRLF);
@@ -199,7 +248,7 @@ public class Request implements Runnable {
 			//  invalid request
 			String statusLine = "HTTP/1.0 405 Method Not Allowed" + CRLF;
 			String contentTypeLine = "Content-Type: text/html" + CRLF;
-			String entityBody = "Method requested is not allowed";
+			String entityBody = "GET SET REMOVE";
 			this.os.writeBytes(statusLine);
 			this.os.writeBytes(contentTypeLine);
 			this.os.writeBytes(CRLF);
@@ -246,6 +295,11 @@ public class Request implements Runnable {
 			st = new StringTokenizer("Hello Hi", " ");
 			r.setRequest(st);
 			System.out.println("-------------------");
+			System.out.println("SET: Sending request with too many parameters");
+			st = new StringTokenizer("Hello Hi FUCK", " ");
+			r.setRequest(st);
+			System.out.println("-------------------");
+			
 		}catch (Exception e){
 			lg.error(e.getMessage());
 		}
@@ -260,6 +314,10 @@ public class Request implements Runnable {
 			System.out.println("-------------------");
 			System.out.println("GET: Sending Bad request");
 			st = new StringTokenizer("FUCKER");
+			r.getRequest(st);
+			System.out.println("-------------------");
+			System.out.println("GET: Sending request with too many parameters");
+			st = new StringTokenizer("GOAT FUCKER");
 			r.getRequest(st);
 			System.out.println("-------------------");
 		}catch (Exception e){
@@ -279,6 +337,10 @@ public class Request implements Runnable {
 			st = new StringTokenizer("Hello");
 			r.removeRequest(st);
 			System.out.println("-------------------");
+			System.out.println("REMOVE: sending request with too many parameters");
+			st = new StringTokenizer("GOAT FUCKER");
+			r.removeRequest(st);
+			System.out.println("-------------------");
 			// checking if remove worked
 			System.out.println("REMOVE: Checking if Hello removed");
 			st = new StringTokenizer("Hello");
@@ -288,4 +350,15 @@ public class Request implements Runnable {
 			lg.error(e.getMessage());
 		}
 	}
+
+	public class InvalidParametersException extends Exception{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6310136941733882114L;
+		public InvalidParametersException(String message){
+			super(message);
+		}
+	}
+
 }
