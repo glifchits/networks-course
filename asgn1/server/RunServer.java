@@ -1,25 +1,13 @@
 /**
- * 
- */
-package server;
-
-/**
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
  * @version 1.0
  * @see Class#Server
  */
-public class RunServer {
-
+public final class RunServer {
 	/**
-	 * 
-	 */
-	public RunServer() {
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param args
+	 * @param args two parameters the first one is Port Number and second
+	 * 				is the logging level
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -37,5 +25,4 @@ public class RunServer {
 			System.out.println("No port number given");
 		}
 	}
-
 }

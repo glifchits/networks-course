@@ -1,8 +1,3 @@
-/**
- * 
- */
-package server;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,8 +37,8 @@ public class DataStructure {
 	/**
 	 * a method that gets the synonyms associated with the key
 	 * @param key the key to get synonyms for (String)
-	 * @return result the synonyms associated with the key. Comma seperated (String)
 	 * @throws NullPointerException when the item was not found
+	 * @return result the synonyms associated with the key. Comma seperated (String)
 	 */
 	public String get(String key)throws NullPointerException{
 		String result = "";
@@ -67,10 +62,10 @@ public class DataStructure {
 	/**
 	 * a method the removes all association with the key.
 	 * @param key the key to remove (String)
+	 * @throws NullPointerException raised when key does not exist
 	 * @return result the of the transaction
 	 */
-	public String remove(String key){
-		String result = null;
+	public void remove(String key)throws NullPointerException{
 		LinkedList<String> list = this.data.get(key);
 		LinkedList<String> removeList = null;
 		// now remove all neighbors
@@ -82,22 +77,18 @@ public class DataStructure {
 			removeList = this.data.get(item);
 			removeList.remove(key);
 		}
-		if (list != null){
-			// word was never part of structure
-			result = "Word was removed: " + key; 
-		}
 		this.data.remove(key); // remove node
-		return result;
+		return;
 	}
 
 	/**
 	 * a method to add associate the value with the key
 	 * @param key the key to associate with (String)
 	 * @param value the value to be associated with the key (String)
+	 * @throws NullPointerException should not really be raised
 	 * @return result the result of the transaction (String)
 	 */
-	public String put(String key, String value){
-		String result = null;
+	public void put(String key, String value) throws NullPointerException{
 		LinkedList<String> keyList = this.data.get(key);
 		LinkedList<String> valueList = this.data.get(value);
 		if (keyList == null){
@@ -152,7 +143,7 @@ public class DataStructure {
 				keyList.add(item);
 			}
 		}		
-		return result;
+		return;
 	}
 
 	/**
@@ -171,13 +162,11 @@ public class DataStructure {
 			System.out.println("Should have raised Exception");
 		}catch (NullPointerException e){
 		}
-				
 		/*
 		 * TESTING put (get)
 		 */
 		// test simple insert
-		result = ds.put("Hey", "Hello");
-		lg.info(result);
+		ds.put("Hey", "Hello");
 		if(ds.get("Hey").compareTo("Hello") != 0){
 			System.out.println("Failed to insert Hey");
 		}
@@ -185,8 +174,7 @@ public class DataStructure {
 			System.out.println("Failed to insert Hello");
 		}
 		// now see if reflection holds
-		result = ds.put("Hi", "Hey");
-		lg.info(result);
+		ds.put("Hi", "Hey");
 		if (ds.get("Hi").compareTo("Hey,Hello") != 0){
 			System.out.println("Reflection failed for Hi");
 		}
@@ -194,8 +182,7 @@ public class DataStructure {
 			System.out.println("Reflection failed for Hello");
 		}
 		// test if try to double insert something
-		result = ds.put("Hi", "Hey");
-		lg.info(result);
+		ds.put("Hi", "Hey");
 		if (ds.get("Hi").compareTo("Hey,Hello") != 0){
 			System.out.println("Double insert happened");
 		}
@@ -204,12 +191,10 @@ public class DataStructure {
 		 */
 		// now see check deletion
 		try{
-			result = ds.remove("Hello");
-			lg.info(result);
+			ds.remove("Hello");
 			System.out.println(ds.get("Hello"));
 			System.out.println("Should have raised exception");
 		}catch (NullPointerException e){
-			
 		}
 		if (ds.get("Hi").compareTo("Hey") != 0){
 			System.out.println("Remove of Hello missed reflection of Hi");
@@ -217,6 +202,6 @@ public class DataStructure {
 		if (ds.get("Hey").compareTo("Hi") != 0){
 			System.out.println("Remove of Hello missed reflection of Hey");
 		}
+		System.out.println("Test Complete");
 	}
-
 }

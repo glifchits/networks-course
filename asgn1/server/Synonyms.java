@@ -1,5 +1,3 @@
-package server;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -40,6 +38,7 @@ public class Synonyms{
 		this.writer = this.lock.writeLock();
 		this.data = new DataStructure(this.logger);
 	}
+
 	/**
 	 * The overloaded constructor which initializes the locks and the data structure.
 	 * It takes a logger.
@@ -52,73 +51,66 @@ public class Synonyms{
 	}
 
 	/**
-	 * The main function. It is used for testing purposes
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	}
-	/**
 	 * a method used to add a pair of strings (word, pair)
 	 * @param word the word to be added
 	 * @param match the matching synonym for the word
+	 * @throws NullPointerException
 	 * @return result  a string indication the action taken
 	 */
-	public String addPair(String word, String match){
-		String result = null;
+	public void addPair(String word, String match)throws NullPointerException{
 		this.writer.lock();
 		try{
 			this.logger.debug("Adding pair - " + word + " : " + match);
-			result = this.data.put(word, match);
-			if (result.compareTo(word + " : " + match + " - was added") == 0 ){
-				this.logger.debug(word + " : " + match + " - was added");
-			}
-			result = this.data.put(match, word); // make sure it is reflective
-			if (result.compareTo(match + " : " + word + " - was added") == 0 ){
-				this.logger.debug(match + " : " + word + " - was added");
-			}
+			this.data.put(word, match);
+		}catch(NullPointerException e){
+			this.logger.debug("Null Pointer when adding pair- " +
+								word + " : " + match);
+			this.logger.error(e.getMessage());
+			throw e;
 		}catch (Exception e){
-			this.logger.error("An error has occurred when adding pair- " +
+			this.logger.debug("An error has occurred when adding pair- " +
 								word + " : " + match);
 			this.logger.error(e.getMessage());
 		}finally{
-			this.reader.unlock();
+			this.writer.unlock();
 		}
-		return result;
+		return;
 	}
+
 	/**
-	 * 
-	 * @param word
+	 * a method to remove a word
+	 * @param word the word to remove (String)
+	 * @throws NullPointerException when the word is not found
 	 * @return
 	 */
-	public String removePair(String word){
-		String result = null;
+	public void removePair(String word)throws NullPointerException{
 		this.writer.lock();
 		try{
 			this.logger.debug("Removing word: " + word);
-			result = this.data.remove(word);
-			if (result == null){
-				result = word + " was not in dictionary";
-				this.logger.debug("Word was not in dictionary: "+ word);
-			}else{
-				this.logger.debug(word +" : " + result + " - was removed");
-				result = word +" : " + result + " - was removed";
-			}
-		} catch(Exception e){
+			this.data.remove(word);
+		} catch(NullPointerException e){
+			this.logger.debug("Null Pointer when removing word: " +
+								word);
+			this.logger.debug(e.getMessage());
+			throw e; // throw the error up
+		}catch(Exception e){
 			this.logger.error("An error has occurred when removing word: " +
 								word);
 			this.logger.error(e.getMessage());
 		}finally{
 			this.writer.unlock();
+			// make sure to unlock regardless of what happened
 		}
-		return result;
+		return;
 	}
+
 	/**
 	 * a method that gets all the matching synonyms for the word.
 	 * @param word the word to find synonyms for (String)
+	 * @throws NullPointerException when the word is not found
 	 * @return matches all the synonyms associated with word. Comma separated (String)
 	 */
-	public String getPair(String word){
+	public String getPair(String word)throws NullPointerException{
 		String matches = null;
 		this.reader.lock();
 		try{
@@ -126,6 +118,11 @@ public class Synonyms{
 			matches = this.data.get(word);
 			this.logger.debug("Resulting synonyms for word"
 								+ word + " - " + matches);
+		}catch (NullPointerException e){
+			this.logger.debug("Null Pointer when getting word: " +
+					word);
+			this.logger.debug(e.getMessage());
+			throw e;
 		}catch (Exception e){
 			this.logger.error("An error has occurred when getting word: " +
 					word);
@@ -134,5 +131,32 @@ public class Synonyms{
 			this.reader.unlock();
 		}
 		return matches;
+	}
+
+	/**
+	 * The main function. It is used for testing purposes
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		/*
+		 * Test just one thread and basic operations
+		 */
+		Logger lg = new Logger(0);
+		Synonyms s = new Synonyms(lg);
+		s.addPair("Hello" , "Hi");
+		String result = s.getPair("Hello");
+		if(result.compareTo("Hi") != 0){
+			lg.error("Put of Hello & Hi did not work");
+		}
+		result = s.getPair("Hi");
+		if(result.compareTo("Hello") != 0){
+			lg.error("Put of Hello & Hi did not work");
+		}
+		s.removePair("Hi");
+		s.removePair("Hello");
+		/*
+		 * Try testing with Two Threads
+		 */
 	}
 }
