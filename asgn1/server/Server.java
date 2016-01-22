@@ -1,3 +1,4 @@
+
 import java.io.* ;
 import java.net.* ;
 
@@ -24,8 +25,8 @@ public class Server {
 	}
 
 	public Server(Logger logger){
-		this.data = new Synonyms();
-		this.logger = logger;
+	    	this.logger = logger;
+		this.data = new Synonyms(this.logger);
 	}
 	/**
 	 * 

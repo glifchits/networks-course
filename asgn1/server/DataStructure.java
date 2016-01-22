@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,7 +55,7 @@ public class DataStructure {
 			result += item + ",";
 		}
 		if (result.compareTo("") == 0){
-			result = null;
+			result = "No matching synonyms";
 		}else{
 			result = result.substring(0, result.length()-1); // remove extra ,
 		}

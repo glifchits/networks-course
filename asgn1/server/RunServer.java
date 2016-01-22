@@ -1,4 +1,9 @@
 /**
+ * 
+ */
+
+
+/**
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
  * @version 1.0
@@ -19,6 +24,7 @@ public final class RunServer {
 			}else{
 				logger = new Logger(2); // production
 			}
+			System.out.println("Server running on port: " + args[0]);
 			Server s = new Server(logger);
 			s.run(port);
 		}catch( Exception e){
