@@ -30,7 +30,7 @@ public class Server {
 	}
 	/**
 	 * 
-	 * @param args
+	 * @param port the port number to run on
 	 */
 	public void run(int port) {
 		try{
