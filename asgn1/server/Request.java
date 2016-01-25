@@ -232,8 +232,9 @@ public class Request implements Runnable {
 	this.br = new BufferedReader(new InputStreamReader(is));
 	// Get the request line of the request message.
 	boolean done = false;
-	String requestLine = br.readLine();
-	while (requestLine.length() != 0 && !done){
+	String requestLine = null;
+	while (!done){
+	    	requestLine = br.readLine();
 		this.logger.info(requestLine);
 		// Extract the filename from the request line.
 		StringTokenizer tokens = new StringTokenizer(requestLine);
@@ -261,9 +262,7 @@ public class Request implements Runnable {
 			this.os.writeBytes(contentTypeLine);
 			this.os.writeBytes(CRLF);
 			this.os.writeBytes(entityBody);
-			this.os.writeBytes(CRLF);
 		}
-		requestLine = br.readLine();
 	}
 	// Close streams and socket.
 	this.os.writeBytes("Bye");
