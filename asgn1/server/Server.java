@@ -25,7 +25,7 @@ public class Server {
 	}
 
 	public Server(Logger logger){
-	    	this.logger = logger;
+	    this.logger = logger;
 		this.data = new Synonyms(this.logger);
 	}
 	/**
