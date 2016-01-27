@@ -29,7 +29,7 @@ public class ClientGui {
     	private JTextField textFieldSetWordB;
     	private JTextField textFieldRemoveWord;
         private JButton btnConnect;
-
+        private JTextArea textAreaResponseOutput;
         private boolean isConnected = false;
 
         private Tab currentTab = Tab.GET;
@@ -134,7 +134,7 @@ public class ClientGui {
     		add(panelResponseOutput, BorderLayout.SOUTH);
     		panelResponseOutput.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-    		JTextArea textAreaResponseOutput = new JTextArea();
+    		textAreaResponseOutput = new JTextArea();
     		textAreaResponseOutput.setFont(new Font("Courier", Font.PLAIN, 14));
     		textAreaResponseOutput.setRows(7);
     		textAreaResponseOutput.setColumns(40);
@@ -177,6 +177,9 @@ public class ClientGui {
 
             private void makeGet() {
                 System.out.println("Make GET");
+                String word = textFieldGetWord.getText();
+                String response = controller.get(word);
+                textAreaResponseOutput.setText(response);
             }
 
             private void makeSet() {
@@ -222,6 +225,7 @@ public class ClientGui {
 
     private static void createAndShowGUI() {
         JFrame f = new JFrame("Synonym Protocol GUI");
+        ClientGui gui = new ClientGui();
         f.add(new ClientGuiJPanel());
         f.pack();
         f.setVisible(true);

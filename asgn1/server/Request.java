@@ -92,36 +92,35 @@ public class Request implements Runnable {
     		this.data.addPair(word.toLowerCase(), match.toLowerCase());
     		statusLine = "SynonymProtocol/1.0 201 Created" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "";		
+		entityBody = ""  + CRLF;		
     	}catch (NoSuchElementException e){
 		//  invalid request
 		statusLine = "SynonymProtocol/1.0 400 Bad Request" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Missing parameter";
+		entityBody = "Missing parameter"  + CRLF;
     	}catch (NullPointerException e){
     		//  invalid request
     		statusLine = "SynonymProtocol/1.0 404 Not Found" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
-    		entityBody = word + " was not found";
+    		entityBody = word + " was not found"  + CRLF;
     	}catch(InterruptedException e){
     		statusLine = "SynonymProtocol/1.0 408 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "";
+		entityBody = ""  + CRLF;
     	}catch (InvalidParametersException e){
 		statusLine = "SynonymProtocol/1.0 400 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Too many parameters";
+		entityBody = "Too many parameters"  + CRLF;
 	}catch (Exception e){
     		//  invalid request
     		statusLine = "SynonymProtocol/1.0 500 Internal Server Error" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
-    		entityBody = "Unknown error";
+    		entityBody = "Unknown error"  + CRLF;
     	}
 	this.os.writeBytes(statusLine);
 	this.os.writeBytes(contentTypeLine);
 	this.os.writeBytes(CRLF);
 	this.os.writeBytes(entityBody);
-	this.os.writeBytes(CRLF);
     }
 
     /**
@@ -143,35 +142,34 @@ public class Request implements Runnable {
 		result = this.data.getPair(word.toLowerCase());
 		statusLine = "SynonymProtocol/1.0 200 Successful" + CRLF;
 		contentTypeLine = "Content-Type: text/html" ;
-		entityBody = result;
+		entityBody = result  + CRLF;
 	}catch (NoSuchElementException e){
 		//  invalid request
 		statusLine = "SynonymProtocol/1.0 400 Bad Request" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Missing parameter(s)";
+		entityBody = "Missing parameter(s)"  + CRLF;
 	}catch (NullPointerException e){
 		statusLine = "SynonymProtocol/1.0 404 Not found" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = word + " was not found";
+		entityBody = word + " was not found"  + CRLF;
 	}catch(InterruptedException e){
 		statusLine = "SynonymProtocol/1.0 408 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "";
+		entityBody = ""  + CRLF;
 	}catch (InvalidParametersException e){
 		statusLine = "SynonymProtocol/1.0 400 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Too many parameters";
+		entityBody = "Too many parameters"  + CRLF;
 	}catch (Exception e){
 		//  unknown error
 		statusLine = "SynonymProtocol/1.0 500 Internal Server Error" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Unknown error";
+		entityBody = "Unknown error" + CRLF;
 	}
 	this.os.writeBytes(statusLine);
 	this.os.writeBytes(contentTypeLine);
 	this.os.writeBytes(CRLF);
 	this.os.writeBytes(entityBody);
-	this.os.writeBytes(CRLF);
     }
 
     /**
@@ -192,35 +190,34 @@ public class Request implements Runnable {
     		this.data.removePair(word.toLowerCase());
     		statusLine = "SynonymProtocol/1.0 200 Successful" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "";
+		entityBody = "" +CRLF;
     	}catch (NoSuchElementException e){
 		//  invalid request
 		statusLine = "SynonymProtocol/1.0 400 Bad Request" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Missing parameter";
+		entityBody = "Missing parameter" +CRLF;
     	}catch (NullPointerException e){
 		statusLine = "SynonymProtocol/1.0 404 Not Found" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = word + " was not found";
+		entityBody = word + " was not found" + CRLF;
 	}catch(InterruptedException e){
 		statusLine = "SynonymProtocol/1.0 408 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "";
+		entityBody = "" +CRLF;
 	}catch (InvalidParametersException e){
 		statusLine = "SynonymProtocol/1.0 400 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Too many parameters";
+		entityBody = "Too many parameters" +CRLF;
 	}catch (Exception e){
 		//  unknown error
 		statusLine = "SynonymProtocol/1.0 500 Internal Server Error" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = "Unknown error has occurred";
+		entityBody = "Unknown error has occurred" + CRLF;
 		}
 	this.os.writeBytes(statusLine);
 	this.os.writeBytes(contentTypeLine);
 	this.os.writeBytes(CRLF);
 	this.os.writeBytes(entityBody);
-	this.os.writeBytes(CRLF);
     }
 
     /**
@@ -262,20 +259,18 @@ public class Request implements Runnable {
 				//  invalid request
 				String statusLine = "SynonymProtocol/1.0 405 Method Not Allowed" + CRLF;
 				String contentTypeLine = "Content-Type: text/html" + CRLF;
-				String entityBody = "GET SET REMOVE";
+				String entityBody = "GET SET REMOVE" + CRLF;
 				this.os.writeBytes(statusLine);
 				this.os.writeBytes(contentTypeLine);
 				this.os.writeBytes(CRLF);
 				this.os.writeBytes(entityBody);
-				this.os.writeBytes(CRLF);
 			}
 		}
 	}catch(SocketTimeoutException e){
 		this.os.writeBytes("SynonymProtocol/1.0 408 RequestTimeout" + CRLF);
 		this.os.writeBytes("Content-Type: text/html" + CRLF);
 		this.os.writeBytes(CRLF);
-		this.os.writeBytes("The connection was closed due to inactivity");
-		this.os.writeBytes(CRLF);	
+		this.os.writeBytes("The connection was closed due to inactivity" +CRLF);	
 	}
 	this.os.close();
 	br.close();
