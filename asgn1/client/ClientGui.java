@@ -29,13 +29,22 @@ public class ClientGui {
     	private JTextField textFieldSetWordB;
     	private JTextField textFieldRemoveWord;
         private JButton btnConnect;
+        private JButton btnMakeRequest;
         private JTextArea textAreaResponseOutput;
         private boolean isConnected = false;
 
         private Tab currentTab = Tab.GET;
 
+        /*
+         * Some public methods to modify GUI element appearance
+         */
+
         public void setConnectBtnText(String text) {
             btnConnect.setText(text);
+        }
+
+        public void setMakeRequestEnabled(boolean enabled) {
+            btnMakeRequest.setEnabled(enabled);
         }
 
     	/**
@@ -88,7 +97,8 @@ public class ClientGui {
             tabbedPaneRequestMaker.addChangeListener(changeListener);
     		panelRequestMaker.add(tabbedPaneRequestMaker);
 
-            JButton btnMakeRequest = new JButton("Send Request");
+            btnMakeRequest = new JButton("Send Request");
+            btnMakeRequest.setEnabled(false);
             btnMakeRequest.addActionListener(new MakeRequestListener());
             panelRequestMaker.add(btnMakeRequest);
 
@@ -154,6 +164,7 @@ public class ClientGui {
                         if (result) {
                             isConnected = result;
                             setConnectBtnText("Disconnect");
+                            setMakeRequestEnabled(true);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("non-integer port number supplied");
@@ -166,6 +177,7 @@ public class ClientGui {
                     try {
                         controller.disconnect();
                         setConnectBtnText("Connect");
+                        setMakeRequestEnabled(false);
                     } catch (Exception e) {
                         System.err.println("Disconnect exception: " + e);
                     }
