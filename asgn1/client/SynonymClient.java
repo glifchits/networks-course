@@ -8,7 +8,7 @@ public class SynonymClient {
 
     final static String CRLF = "\r\n";
     final static int SUCCESS = 200;
-    
+
     private Socket socket;
     private DataOutputStream output;
     private BufferedReader input;
@@ -51,8 +51,7 @@ public class SynonymClient {
     public String get(String getWord) {
         System.out.println("Get word: " + getWord);
         String request = "GET " + getWord;
-        String response = null;
-        try{
+        try {
             output.writeBytes(request + CRLF);
             String header = input.readLine();
             input.readLine(); // Content Type
@@ -61,51 +60,83 @@ public class SynonymClient {
             System.out.println(header);
             System.out.println(body);
             int code = parseHeaderCode(header);
-            if (code == SUCCESS ){
-        	response = body;
-            }else{
-        	response = parseHeaderMessage(header);
+            if (code == SUCCESS) {
+                return body;
+            } else {
+                return parseHeaderMessage(header);
             }
-        }catch(Exception e){
-            System.out.println("Exception:" + e.getMessage());
+        } catch(Exception e) {
+            System.out.println("Exception:" + e.toString());
+            return e.toString();
         }
-        return response;
     }
 
-    public void set(String word1, String word2) {
+    public String set(String word1, String word2) {
         System.out.println("Set Synonyms: " + word1 + " is a synonym for " + word2);
+        String request = "SET " + word1 + " " + word2;
+        try {
+            output.writeBytes(request + CRLF);
+            String header = input.readLine();
+            input.readLine(); // Content-type
+            input.readLine(); // CRLF
+            String body = input.readLine();
+            int code = parseHeaderCode(header);
+            if (code == SUCCESS) {
+                return body;
+            } else {
+                return parseHeaderMessage(header);
+            }
+        } catch (Exception e) {
+            return e.toString();
+        }
     }
 
-    public void remove(String removeWord) {
+    public String remove(String removeWord) {
         System.out.println("Remove word: " + removeWord);
+        String request = "REMOVE " + removeWord;
+        try {
+            output.writeBytes(request + CRLF);
+            String header = input.readLine();
+            input.readLine(); // Content-type
+            input.readLine(); // CRLF
+            String body = input.readLine();
+            int code = parseHeaderCode(header);
+            if (code == SUCCESS) {
+                return body;
+            } else {
+                return parseHeaderMessage(header);
+            }
+        } catch (Exception e) {
+            return e.toString();
+        }
     }
 
-    public int parseHeaderCode(String header)throws NoSuchElementException{
-	int code = 0;
-	try{
-        	StringTokenizer tokens = new StringTokenizer(header);
-        	tokens.nextToken();
-        	String codeString = tokens.nextToken();
-        	code = Integer.parseInt(codeString);
-	}catch (NoSuchElementException e){
-	    throw e;
-	}
-	return code;
+    public int parseHeaderCode(String header) throws NoSuchElementException{
+        int code = 0;
+        try {
+            StringTokenizer tokens = new StringTokenizer(header);
+            tokens.nextToken();
+            String codeString = tokens.nextToken();
+            code = Integer.parseInt(codeString);
+        } catch (NoSuchElementException e) {
+            throw e;
+        }
+        return code;
     }
-    
-    public String parseHeaderMessage(String header){
-	String message = null;
-	try{
-    		StringTokenizer tokens = new StringTokenizer(header);
-    		tokens.nextToken();
-    		tokens.nextToken();
-    		message = "";
-    		while (tokens.hasMoreTokens()){
-    		message += tokens.nextToken() + " ";
-    		}
-	}catch (NoSuchElementException e){
-	    throw e;
-	}
-	return message;
+
+    public String parseHeaderMessage(String header) {
+        String message = null;
+        try {
+            StringTokenizer tokens = new StringTokenizer(header);
+            tokens.nextToken();
+            tokens.nextToken();
+            message = "";
+            while (tokens.hasMoreTokens()){
+                message += tokens.nextToken() + " ";
+            }
+        } catch (NoSuchElementException e) {
+            throw e;
+        }
+        return message;
     }
 }

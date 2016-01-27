@@ -184,10 +184,17 @@ public class ClientGui {
 
             private void makeSet() {
                 System.out.println("Make SET");
+                String word1 = textFieldSetWordA.getText();
+                String word2 = textFieldSetWordB.getText();
+                String response = controller.set(word1, word2);
+                textAreaResponseOutput.setText(response);
             }
 
             private void makeRemove() {
                 System.out.println("Make REMOVE");
+                String word = textFieldRemoveWord.getText();
+                String response = controller.remove(word);
+                textAreaResponseOutput.setText(response);
             }
 
             public void actionPerformed(ActionEvent evt) {
