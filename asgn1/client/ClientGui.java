@@ -153,7 +153,6 @@ public class ClientGui {
 
         private class ConnectDisconnectListener implements ActionListener {
             public void actionPerformed(ActionEvent evt) {
-                System.out.println("clicked conn/disconnect");
                 if (!isConnected) {
                     System.out.println("should connect");
                     try {
@@ -176,6 +175,7 @@ public class ClientGui {
                     System.out.println("should disconnect");
                     try {
                         controller.disconnect();
+                        isConnected = false;
                         setConnectBtnText("Connect");
                         setMakeRequestEnabled(false);
                     } catch (Exception e) {
