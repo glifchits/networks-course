@@ -105,7 +105,7 @@ public class ClientGui {
     		JPanel panelGetRequest = new JPanel();
     		tabbedPaneRequestMaker.addTab("Get", null, panelGetRequest, null);
 
-    		JLabel lblGetASynonym = new JLabel("Get a synonym for the word:");
+    		JLabel lblGetASynonym = new JLabel("Get synonyms for the word:");
     		panelGetRequest.add(lblGetASynonym);
 
     		textFieldGetWord = new JTextField();
