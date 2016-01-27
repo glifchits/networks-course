@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 import java.io.* ;
@@ -28,9 +28,9 @@ import java.util.* ;
 
 
 public class Request implements Runnable {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	final static String CRLF = "\r\n";
 	private Socket socket;
@@ -64,7 +64,7 @@ public class Request implements Runnable {
      * a Runnable interface
      */
     public void run() {
-	
+
 	try {
 	    this.processRequest();
 	} catch (Exception e) {
@@ -92,7 +92,7 @@ public class Request implements Runnable {
     		this.data.addPair(word.toLowerCase(), match.toLowerCase());
     		statusLine = "SynonymProtocol/1.0 201 Created" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
-		entityBody = ""  + CRLF;		
+		entityBody = ""  + CRLF;
     	}catch (NoSuchElementException e){
 		//  invalid request
 		statusLine = "SynonymProtocol/1.0 400 Bad Request" + CRLF;
@@ -251,7 +251,7 @@ public class Request implements Runnable {
 				this.setRequest(tokens);
 			}else if(method.toUpperCase().compareTo("REMOVE") == 0){
 				this.removeRequest(tokens);
-			}else if (method.toUpperCase().compareTo("QUIT") == 0 || 
+			}else if (method.toUpperCase().compareTo("QUIT") == 0 ||
 					requestLine.length() == 0){
 			    done = true;
 			    this.logger.debug("Closing connection");
@@ -270,7 +270,7 @@ public class Request implements Runnable {
 		this.os.writeBytes("SynonymProtocol/1.0 408 RequestTimeout" + CRLF);
 		this.os.writeBytes("Content-Type: text/html" + CRLF);
 		this.os.writeBytes(CRLF);
-		this.os.writeBytes("The connection was closed due to inactivity" +CRLF);	
+		this.os.writeBytes("The connection was closed due to inactivity" +CRLF);
 	}
 	this.os.close();
 	br.close();
@@ -288,7 +288,7 @@ public class Request implements Runnable {
     /**
      * The main function. It is used for testing purposes
      * @param args
-     * @throws Exception 
+     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
 	// TODO Auto-generated method stub
@@ -369,7 +369,7 @@ public class Request implements Runnable {
 
     public class InvalidParametersException extends Exception{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6310136941733882114L;
 	public InvalidParametersException(String message){
