@@ -50,14 +50,14 @@ public class ClientGui {
     		JLabel lblIpAddress = new JLabel("IP Address");
     		panelConnectionParams.add(lblIpAddress);
 
-    		textFieldIPAddress = new JTextField();
+    		textFieldIPAddress = new JTextField("localhost");
     		panelConnectionParams.add(textFieldIPAddress);
     		textFieldIPAddress.setColumns(12);
 
     		JLabel lblPort = new JLabel("Port");
     		panelConnectionParams.add(lblPort);
 
-    		textFieldPortNumber = new JTextField();
+    		textFieldPortNumber = new JTextField("5555");
     		panelConnectionParams.add(textFieldPortNumber);
     		textFieldPortNumber.setColumns(5);
 
