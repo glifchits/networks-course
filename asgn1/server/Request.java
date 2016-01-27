@@ -141,7 +141,7 @@ public class Request implements Runnable {
 		}
 		result = this.data.getPair(word.toLowerCase());
 		statusLine = "SynonymProtocol/1.0 200 Successful" + CRLF;
-		contentTypeLine = "Content-Type: text/html" ;
+		contentTypeLine = "Content-Type: text/html" + CRLF;
 		entityBody = result  + CRLF;
 	}catch (NoSuchElementException e){
 		//  invalid request
