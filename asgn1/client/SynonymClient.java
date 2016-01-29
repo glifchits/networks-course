@@ -48,7 +48,7 @@ public class SynonymClient {
 
     /* Methods for interacting with the Synonym Protocol */
 
-    public String get(String getWord) {
+    public String get(String getWord) throws SocketException {
         System.out.println("Get word: " + getWord);
         String request = "GET " + getWord;
         try {
@@ -65,13 +65,15 @@ public class SynonymClient {
             } else {
                 return parseHeaderMessage(header);
             }
+        } catch (SocketException e) {
+            throw e;
         } catch(Exception e) {
             System.out.println("Exception:" + e.toString());
             return e.toString();
         }
     }
 
-    public String set(String word1, String word2) {
+    public String set(String word1, String word2)  throws SocketException {
         System.out.println("Set Synonyms: " + word1 + " is a synonym for " + word2);
         String request = "SET " + word1 + " " + word2;
         try {
@@ -86,12 +88,14 @@ public class SynonymClient {
             } else {
                 return parseHeaderMessage(header);
             }
+        } catch (SocketException e) {
+            throw e;
         } catch (Exception e) {
             return e.toString();
         }
     }
 
-    public String remove(String removeWord) {
+    public String remove(String removeWord) throws SocketException {
         System.out.println("Remove word: " + removeWord);
         String request = "REMOVE " + removeWord;
         try {
@@ -106,6 +110,8 @@ public class SynonymClient {
             } else {
                 return parseHeaderMessage(header);
             }
+        } catch (SocketException e) {
+            throw e;
         } catch (Exception e) {
             return e.toString();
         }

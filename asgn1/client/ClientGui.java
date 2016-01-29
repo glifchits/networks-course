@@ -1,3 +1,5 @@
+import java.net.SocketException;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -147,7 +149,8 @@ public class ClientGui {
     		textAreaResponseOutput = new JTextArea();
     		textAreaResponseOutput.setFont(new Font("Courier", Font.PLAIN, 14));
     		textAreaResponseOutput.setRows(7);
-    		textAreaResponseOutput.setColumns(40);
+    		textAreaResponseOutput.setColumns(60);
+            textAreaResponseOutput.setEditable(false);
     		panelResponseOutput.add(textAreaResponseOutput);
     	}
 
@@ -161,9 +164,7 @@ public class ClientGui {
                         boolean result = controller.connect(ipAddress, portNumber);
                         System.out.println("Connected with result: " + result);
                         if (result) {
-                            isConnected = result;
-                            setConnectBtnText("Disconnect");
-                            setMakeRequestEnabled(true);
+                            clientConnect();
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("non-integer port number supplied");
@@ -175,9 +176,7 @@ public class ClientGui {
                     System.out.println("should disconnect");
                     try {
                         controller.disconnect();
-                        isConnected = false;
-                        setConnectBtnText("Connect");
-                        setMakeRequestEnabled(false);
+                        clientDisconnect();
                     } catch (Exception e) {
                         System.err.println("Disconnect exception: " + e);
                     }
@@ -185,28 +184,70 @@ public class ClientGui {
             }
         }
 
+        private void clientConnect(String message) {
+            // now connected: the button should offer chance to disconnect
+            isConnected = true;
+            setConnectBtnText("Disconnect");
+            setMakeRequestEnabled(true);
+            textAreaResponseOutput.setText(message);
+        }
+        private void clientConnect() {
+            clientConnect("Connected");
+        }
+
+        private void clientDisconnect(String message) {
+            isConnected = false;
+            setConnectBtnText("Connect");
+            setMakeRequestEnabled(false);
+            textAreaResponseOutput.setText(message);
+        }
+        private void clientDisconnect() {
+            clientDisconnect("Disconnected");
+        }
+
         private class MakeRequestListener implements ActionListener {
 
             private void makeGet() {
                 System.out.println("Make GET");
                 String word = textFieldGetWord.getText();
-                String response = controller.get(word);
-                textAreaResponseOutput.setText(response);
+                try {
+                    String response = controller.get(word);
+                    textAreaResponseOutput.setText(response);
+                } catch (SocketException e) {
+                    clientDisconnect(
+                        "Error: connection to the server was lost.\n" +
+                        "Ensure the server is running and still reachable."
+                    );
+                }
             }
 
             private void makeSet() {
                 System.out.println("Make SET");
                 String word1 = textFieldSetWordA.getText();
                 String word2 = textFieldSetWordB.getText();
-                String response = controller.set(word1, word2);
-                textAreaResponseOutput.setText(response);
+                try {
+                    String response = controller.set(word1, word2);
+                    textAreaResponseOutput.setText(response);
+                } catch (SocketException e) {
+                    clientDisconnect(
+                        "Error: connection to the server was lost.\n" +
+                        "Ensure the server is running and still reachable."
+                    );
+                }
             }
 
             private void makeRemove() {
                 System.out.println("Make REMOVE");
                 String word = textFieldRemoveWord.getText();
-                String response = controller.remove(word);
-                textAreaResponseOutput.setText(response);
+                try {
+                    String response = controller.remove(word);
+                    textAreaResponseOutput.setText(response);
+                } catch (SocketException e) {
+                    clientDisconnect(
+                        "Error: connection to the server was lost.\n" +
+                        "Ensure the server is running and still reachable."
+                    );
+                }
             }
 
             public void actionPerformed(ActionEvent evt) {
