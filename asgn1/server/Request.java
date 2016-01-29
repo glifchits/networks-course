@@ -46,7 +46,7 @@ public class Request implements Runnable {
 	public Request(Socket socket, Synonyms syn) throws SocketException {
 		this.socket = socket;
 		// set the socket to timeout
-		this.socket.setSoTimeout(3000);
+		this.socket.setSoTimeout(30000);
 		this.os = null;
 		this.data = syn;
 		this.logger = new Logger();
@@ -67,8 +67,12 @@ public class Request implements Runnable {
 
 	try {
 	    this.processRequest();
+	} catch(SocketException){
+		this.logger.debug("The socket was closed on the other end");
 	} catch (Exception e) {
+		System.out.println("Error from process");
 	    this.logger.error(e.getMessage());
+	    e.printStackTrace(System.out);
 	}
     }
 
@@ -234,13 +238,15 @@ public class Request implements Runnable {
 	// Get the request line of the request message.
 	boolean done = false;
 	String requestLine = null;
+	StringTokenizer tokens = null;
+	String method = null;
 	try{
 		while (!done){
-		    	requestLine = br.readLine();
-			this.logger.info(requestLine);
+		    requestLine = br.readLine();
+			this.logger.info("Request Line:" + requestLine);
 			// Extract the filename from the request line.
-			StringTokenizer tokens = new StringTokenizer(requestLine);
-			String method = tokens.nextToken();
+			tokens = new StringTokenizer(requestLine);
+			method = tokens.nextToken();
 			// Debug info for private use
 			this.logger.debug("Incoming!!!");
 			this.logger.debug(requestLine);
@@ -271,9 +277,12 @@ public class Request implements Runnable {
 		this.os.writeBytes("Content-Type: text/html" + CRLF);
 		this.os.writeBytes(CRLF);
 		this.os.writeBytes("The connection was closed due to inactivity" +CRLF);
+	}catch(NoSuchElementException e){
+		// thrown when the empty request was sent
+		this.logger.debug("Empty request to socket was closed");
 	}
 	this.os.close();
-	br.close();
+	this.br.close();
 	this.socket.close();
 	return done;
     }
