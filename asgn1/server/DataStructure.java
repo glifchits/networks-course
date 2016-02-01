@@ -67,7 +67,6 @@ public class DataStructure {
 	 * a method the removes all association with the key.
 	 * @param key the key to remove (String)
 	 * @throws NullPointerException raised when key does not exist
-	 * @return result the of the transaction
 	 */
 	public void remove(String key)throws NullPointerException{
 		LinkedList<String> list = this.data.get(key);
