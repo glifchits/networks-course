@@ -24,12 +24,12 @@ public class ClientGui {
     }
 
     public static class ClientGuiJPanel extends JPanel {
-    	private JTextField textFieldIPAddress;
-    	private JTextField textFieldPortNumber;
-    	private JTextField textFieldGetWord;
-    	private JTextField textFieldSetWordA;
-    	private JTextField textFieldSetWordB;
-    	private JTextField textFieldRemoveWord;
+        private JTextField textFieldIPAddress;
+        private JTextField textFieldPortNumber;
+        private JTextField textFieldGetWord;
+        private JTextField textFieldSetWordA;
+        private JTextField textFieldSetWordB;
+        private JTextField textFieldRemoveWord;
         private JButton btnConnect;
         private JButton btnMakeRequest;
         private JTextArea textAreaResponseOutput;
@@ -38,8 +38,8 @@ public class ClientGui {
         private Tab currentTab = Tab.GET;
 
         /*
-         * Some public methods to modify GUI element appearance
-         */
+        * Some public methods to modify GUI element appearance
+        */
 
         public void setConnectBtnText(String text) {
             btnConnect.setText(text);
@@ -49,42 +49,42 @@ public class ClientGui {
             btnMakeRequest.setEnabled(enabled);
         }
 
-    	/**
-    	 * Create the panel.
-    	 */
-    	public ClientGuiJPanel() {
-    		setLayout(new BorderLayout(0, 0));
+        /**
+        * Create the panel.
+        */
+        public ClientGuiJPanel() {
+            setLayout(new BorderLayout(0, 0));
 
-    		JPanel panelConnectionParams = new JPanel();
-    		add(panelConnectionParams, BorderLayout.NORTH);
+            JPanel panelConnectionParams = new JPanel();
+            add(panelConnectionParams, BorderLayout.NORTH);
 
-    		JLabel lblIpAddress = new JLabel("IP Address");
-    		panelConnectionParams.add(lblIpAddress);
+            JLabel lblIpAddress = new JLabel("IP Address");
+            panelConnectionParams.add(lblIpAddress);
 
-    		textFieldIPAddress = new JTextField("localhost");
-    		panelConnectionParams.add(textFieldIPAddress);
-    		textFieldIPAddress.setColumns(12);
+            textFieldIPAddress = new JTextField("localhost");
+            panelConnectionParams.add(textFieldIPAddress);
+            textFieldIPAddress.setColumns(12);
 
-    		JLabel lblPort = new JLabel("Port");
-    		panelConnectionParams.add(lblPort);
+            JLabel lblPort = new JLabel("Port");
+            panelConnectionParams.add(lblPort);
 
-    		textFieldPortNumber = new JTextField("5555");
-    		panelConnectionParams.add(textFieldPortNumber);
-    		textFieldPortNumber.setColumns(5);
+            textFieldPortNumber = new JTextField("5555");
+            panelConnectionParams.add(textFieldPortNumber);
+            textFieldPortNumber.setColumns(5);
 
-    		btnConnect = new JButton("Connect");
+            btnConnect = new JButton("Connect");
             btnConnect.addActionListener(new ConnectDisconnectListener());
-    		panelConnectionParams.add(btnConnect);
+            panelConnectionParams.add(btnConnect);
 
             JPanel panelRequestMaker = new JPanel();
             add(panelRequestMaker, BorderLayout.CENTER);
 
-    		JTabbedPane tabbedPaneRequestMaker = new JTabbedPane(JTabbedPane.TOP);
+            JTabbedPane tabbedPaneRequestMaker = new JTabbedPane(JTabbedPane.TOP);
 
             ChangeListener changeListener = new ChangeListener() {
                 /*
-                 * Code adapted from http://www.java2s.com/Tutorial/Java/0240__Swing/ListeningforSelectedTabChanges.htm
-                 */
+                * Code adapted from http://www.java2s.com/Tutorial/Java/0240__Swing/ListeningforSelectedTabChanges.htm
+                */
                 public void stateChanged(ChangeEvent changeEvent) {
                     JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
                     int index = sourceTabbedPane.getSelectedIndex();
@@ -97,62 +97,62 @@ public class ClientGui {
                 }
             };
             tabbedPaneRequestMaker.addChangeListener(changeListener);
-    		panelRequestMaker.add(tabbedPaneRequestMaker);
+            panelRequestMaker.add(tabbedPaneRequestMaker);
 
             btnMakeRequest = new JButton("Send Request");
             btnMakeRequest.setEnabled(false);
             btnMakeRequest.addActionListener(new MakeRequestListener());
             panelRequestMaker.add(btnMakeRequest);
 
-    		JPanel panelGetRequest = new JPanel();
-    		tabbedPaneRequestMaker.addTab("Get", null, panelGetRequest, null);
+            JPanel panelGetRequest = new JPanel();
+            tabbedPaneRequestMaker.addTab("Get", null, panelGetRequest, null);
 
-    		JLabel lblGetASynonym = new JLabel("Get synonyms for the word:");
-    		panelGetRequest.add(lblGetASynonym);
+            JLabel lblGetASynonym = new JLabel("Get synonyms for the word:");
+            panelGetRequest.add(lblGetASynonym);
 
-    		textFieldGetWord = new JTextField();
-    		panelGetRequest.add(textFieldGetWord);
-    		textFieldGetWord.setColumns(10);
+            textFieldGetWord = new JTextField();
+            panelGetRequest.add(textFieldGetWord);
+            textFieldGetWord.setColumns(10);
 
-    		JPanel panelSetRequest = new JPanel();
-    		tabbedPaneRequestMaker.addTab("Set", null, panelSetRequest, null);
-    		panelSetRequest.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            JPanel panelSetRequest = new JPanel();
+            tabbedPaneRequestMaker.addTab("Set", null, panelSetRequest, null);
+            panelSetRequest.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-    		JLabel lblDefineTwoWords = new JLabel("Define:");
-    		panelSetRequest.add(lblDefineTwoWords);
+            JLabel lblDefineTwoWords = new JLabel("Define:");
+            panelSetRequest.add(lblDefineTwoWords);
 
-    		textFieldSetWordB = new JTextField();
-    		panelSetRequest.add(textFieldSetWordB);
-    		textFieldSetWordB.setColumns(10);
+            textFieldSetWordB = new JTextField();
+            panelSetRequest.add(textFieldSetWordB);
+            textFieldSetWordB.setColumns(10);
 
-    		JLabel lblIsASynonym = new JLabel("is a synonym for");
-    		panelSetRequest.add(lblIsASynonym);
+            JLabel lblIsASynonym = new JLabel("is a synonym for");
+            panelSetRequest.add(lblIsASynonym);
 
-    		textFieldSetWordA = new JTextField();
-    		panelSetRequest.add(textFieldSetWordA);
-    		textFieldSetWordA.setColumns(10);
+            textFieldSetWordA = new JTextField();
+            panelSetRequest.add(textFieldSetWordA);
+            textFieldSetWordA.setColumns(10);
 
-    		JPanel panelRemoveRequest = new JPanel();
-    		tabbedPaneRequestMaker.addTab("Remove", null, panelRemoveRequest, null);
+            JPanel panelRemoveRequest = new JPanel();
+            tabbedPaneRequestMaker.addTab("Remove", null, panelRemoveRequest, null);
 
-    		JLabel lblRemoveAWord = new JLabel("Remove a word from the dictionary:");
-    		panelRemoveRequest.add(lblRemoveAWord);
+            JLabel lblRemoveAWord = new JLabel("Remove a word from the dictionary:");
+            panelRemoveRequest.add(lblRemoveAWord);
 
-    		textFieldRemoveWord = new JTextField();
-    		panelRemoveRequest.add(textFieldRemoveWord);
-    		textFieldRemoveWord.setColumns(10);
+            textFieldRemoveWord = new JTextField();
+            panelRemoveRequest.add(textFieldRemoveWord);
+            textFieldRemoveWord.setColumns(10);
 
-    		JPanel panelResponseOutput = new JPanel();
-    		add(panelResponseOutput, BorderLayout.SOUTH);
-    		panelResponseOutput.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            JPanel panelResponseOutput = new JPanel();
+            add(panelResponseOutput, BorderLayout.SOUTH);
+            panelResponseOutput.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-    		textAreaResponseOutput = new JTextArea();
-    		textAreaResponseOutput.setFont(new Font("Courier", Font.PLAIN, 14));
-    		textAreaResponseOutput.setRows(7);
-    		textAreaResponseOutput.setColumns(60);
+            textAreaResponseOutput = new JTextArea();
+            textAreaResponseOutput.setFont(new Font("Courier", Font.PLAIN, 14));
+            textAreaResponseOutput.setRows(7);
+            textAreaResponseOutput.setColumns(60);
             textAreaResponseOutput.setEditable(false);
-    		panelResponseOutput.add(textAreaResponseOutput);
-    	}
+            panelResponseOutput.add(textAreaResponseOutput);
+        }
 
         private class ConnectDisconnectListener implements ActionListener {
             public void actionPerformed(ActionEvent evt) {
@@ -215,8 +215,8 @@ public class ClientGui {
                     textAreaResponseOutput.setText(response);
                 } catch (SocketException e) {
                     clientDisconnect(
-                        "Error: connection to the server was lost.\n" +
-                        "Ensure the server is running and still reachable."
+                    "Error: connection to the server was lost.\n" +
+                    "Ensure the server is running and still reachable."
                     );
                 }
             }
@@ -230,8 +230,8 @@ public class ClientGui {
                     textAreaResponseOutput.setText(response);
                 } catch (SocketException e) {
                     clientDisconnect(
-                        "Error: connection to the server was lost.\n" +
-                        "Ensure the server is running and still reachable."
+                    "Error: connection to the server was lost.\n" +
+                    "Ensure the server is running and still reachable."
                     );
                 }
             }
@@ -244,8 +244,8 @@ public class ClientGui {
                     textAreaResponseOutput.setText(response);
                 } catch (SocketException e) {
                     clientDisconnect(
-                        "Error: connection to the server was lost.\n" +
-                        "Ensure the server is running and still reachable."
+                    "Error: connection to the server was lost.\n" +
+                    "Ensure the server is running and still reachable."
                     );
                 }
             }
@@ -253,11 +253,11 @@ public class ClientGui {
             public void actionPerformed(ActionEvent evt) {
                 switch (currentTab) {
                     case GET:
-                        makeGet(); break;
+                    makeGet(); break;
                     case SET:
-                        makeSet(); break;
+                    makeSet(); break;
                     case REMOVE:
-                        makeRemove(); break;
+                    makeRemove(); break;
                 }
             }
         }
@@ -271,9 +271,9 @@ public class ClientGui {
     }
 
     /*
-     * This code is adapted from
-     * https://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html
-     */
+    * This code is adapted from
+    * https://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html
+    */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

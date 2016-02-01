@@ -14,9 +14,9 @@ public class SynonymClient {
     private BufferedReader input;
 
     public SynonymClient(){
-	socket = null;
-	output = null;
-	input = null;
+        socket = null;
+        output = null;
+        input = null;
     }
     public boolean connect(String ipAddress, int portNumber) throws Exception {
         socket = new Socket(ipAddress, portNumber);
