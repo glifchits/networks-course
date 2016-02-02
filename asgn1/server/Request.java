@@ -38,20 +38,27 @@ public class Request implements Runnable {
 	private Synonyms data;
 	private Logger logger;
 	private BufferedReader br;
+
 	/**
-	 * the only constructor
+	 * the constructor with no logger
 	 * @param socket the socket of the request (Socket)
-	 * @param s the synonym structure for the requests to operate on (Synonyms)
+	 * @param syn the synonym structure for the requests to operate on (Synonyms)
 	 */
 	public Request(Socket socket, Synonyms syn) throws SocketException {
 		this.socket = socket;
 		// set the socket to timeout
-		this.socket.setSoTimeout(3000);
+		this.socket.setSoTimeout(30000);
 		this.os = null;
 		this.data = syn;
 		this.logger = new Logger();
 	}
 
+	/**
+	 * the constructor with no logger
+	 * @param socket the socket of the request (Socket)
+	 * @param syn the synonym structure for the requests to operate on (Synonyms)
+	 * @param logger the logger for the class (Logger)
+	 */
 	public Request(Socket socket, Synonyms syn, Logger logger) throws SocketException {
 		this.socket = socket;
 		this.socket.setSoTimeout(30000);
@@ -59,23 +66,28 @@ public class Request implements Runnable {
 		this.data = syn;
 		this.logger = logger;
 	}
+
     // Implement the run() method of the Runnable interface.
     /**
      * a Runnable interface
+     * called for when running a thread
      */
     public void run() {
-
-	try {
-	    this.processRequest();
-	} catch (Exception e) {
-	    this.logger.error(e.getMessage());
-	}
+		try {
+		    this.processRequest();
+		} catch(SocketException){
+			this.logger.debug("The socket was closed on the other end");
+		} catch (Exception e) {
+			System.out.println("Error from process");
+		    this.logger.error(e.getMessage());
+		    e.printStackTrace(System.out);
+		}
     }
 
     /**
      * a method to handle SET requests
      * @param tokenizer the tokens of the request (StringTokenizer)
-     * @throws Exception
+     * @throws Exception is raised when the request is not properly handled
      */
     private void setRequest(StringTokenizer tokenizer) throws Exception {
     	String word = null;
@@ -111,7 +123,7 @@ public class Request implements Runnable {
 		statusLine = "SynonymProtocol/1.0 400 Request Timeout" + CRLF;
 		contentTypeLine = "Content-Type: text/html" + CRLF;
 		entityBody = "Too many parameters"  + CRLF;
-	}catch (Exception e){
+    	}catch (Exception e){
     		//  invalid request
     		statusLine = "SynonymProtocol/1.0 500 Internal Server Error" + CRLF;
     		contentTypeLine = "Content-Type: text/html" + CRLF;
@@ -126,7 +138,7 @@ public class Request implements Runnable {
     /**
      * a method to handle GET requests
      * @param tokenizer the tokens of the request (StringTokenizer)
-     * @throws Exception
+     * @throws Exception raised when the request is not properly handled
      */
     private void getRequest(StringTokenizer tokenizer) throws Exception{
 	String word = null;
@@ -175,7 +187,7 @@ public class Request implements Runnable {
     /**
      * a method to handle REMOVE request
      * @param tokenizer the tokens of the request (StringTokenizer)
-     * @throws Exception
+     * @throws Exception raised when the request is not properly handled
      */
     private void removeRequest(StringTokenizer tokenizer) throws Exception{
     	String word = null;
@@ -234,13 +246,15 @@ public class Request implements Runnable {
 	// Get the request line of the request message.
 	boolean done = false;
 	String requestLine = null;
+	StringTokenizer tokens = null;
+	String method = null;
 	try{
 		while (!done){
-		    	requestLine = br.readLine();
-			this.logger.info(requestLine);
+		    requestLine = br.readLine();
+			this.logger.info("Request Line:" + requestLine);
 			// Extract the filename from the request line.
-			StringTokenizer tokens = new StringTokenizer(requestLine);
-			String method = tokens.nextToken();
+			tokens = new StringTokenizer(requestLine);
+			method = tokens.nextToken();
 			// Debug info for private use
 			this.logger.debug("Incoming!!!");
 			this.logger.debug(requestLine);
@@ -267,13 +281,17 @@ public class Request implements Runnable {
 			}
 		}
 	}catch(SocketTimeoutException e){
+		// raised when the socket is inactive
 		this.os.writeBytes("SynonymProtocol/1.0 408 RequestTimeout" + CRLF);
 		this.os.writeBytes("Content-Type: text/html" + CRLF);
 		this.os.writeBytes(CRLF);
 		this.os.writeBytes("The connection was closed due to inactivity" +CRLF);
+	}catch(NoSuchElementException e){
+		// thrown when the empty request was sent
+		this.logger.debug("Empty request to socket was closed");
 	}
 	this.os.close();
-	br.close();
+	this.br.close();
 	this.socket.close();
 	return done;
     }

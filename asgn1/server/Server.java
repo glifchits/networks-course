@@ -16,7 +16,7 @@ public class Server {
 	private Logger logger;
 
 	/**
-	 * 
+	 * the default constructor
 	 */
 	public Server() {
 		// TODO Auto-generated constructor stub
@@ -24,10 +24,15 @@ public class Server {
 		this.logger = new Logger();
 	}
 
+	/**
+	 * the constructor with a given logger
+	 * @params logger the logger for the class (Logger)
+	 */
 	public Server(Logger logger){
 	    this.logger = logger;
 		this.data = new Synonyms(this.logger);
 	}
+
 	/**
 	 * 
 	 * @param port the port number to run on
