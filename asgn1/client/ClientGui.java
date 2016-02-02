@@ -154,6 +154,11 @@ public class ClientGui {
             panelResponseOutput.add(textAreaResponseOutput);
         }
 
+        /*
+         * Listener for the connect/disconnect button
+         * Will establish or end a connection using the SynonymClient
+         * Will display any exceptions in the response text area
+         */
         private class ConnectDisconnectListener implements ActionListener {
             public void actionPerformed(ActionEvent evt) {
                 if (!isConnected) {
@@ -184,6 +189,12 @@ public class ClientGui {
             }
         }
 
+        /*
+         * Helper function which changes the GUI to its state once a connection
+         * is created.
+         * @param message a message to display in the response textarea with
+         * information about the connection status
+         */
         private void clientConnect(String message) {
             // now connected: the button should offer chance to disconnect
             isConnected = true;
@@ -191,16 +202,27 @@ public class ClientGui {
             setMakeRequestEnabled(true);
             textAreaResponseOutput.setText(message);
         }
+
+        /*
+         * Puts GUI in connected state, with default message simply "Connected"
+         */
         private void clientConnect() {
             clientConnect("Connected");
         }
 
+        /*
+         * Puts the GUI in a disconnected state with message
+         */
         private void clientDisconnect(String message) {
             isConnected = false;
             setConnectBtnText("Connect");
             setMakeRequestEnabled(false);
             textAreaResponseOutput.setText(message);
         }
+        /*
+         * Puts the GUI in a disconnected state with just the message
+         * "Disconnected"
+         */
         private void clientDisconnect() {
             clientDisconnect("Disconnected");
         }

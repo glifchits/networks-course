@@ -3,7 +3,14 @@ import java.net.*;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-
+/**
+ *
+ * SynonymClient
+ *
+ * This class encapsulates methods which directly communicate with the
+ * SynonymProtocol server.
+ *
+ */
 public class SynonymClient {
 
     final static String CRLF = "\r\n";
@@ -18,6 +25,7 @@ public class SynonymClient {
         output = null;
         input = null;
     }
+
     public boolean connect(String ipAddress, int portNumber) throws Exception {
         socket = new Socket(ipAddress, portNumber);
         output = new DataOutputStream(this.socket.getOutputStream());
