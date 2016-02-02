@@ -49,7 +49,7 @@ public class ClientGui {
 
         private Tab currentTab = Tab.GET;
 
-        /*
+        /**
         * Some public methods to modify GUI element appearance
         */
 
@@ -166,7 +166,7 @@ public class ClientGui {
             panelResponseOutput.add(textAreaResponseOutput);
         }
 
-        /*
+        /**
          * Listener for the connect/disconnect button
          * Will establish or end a connection using the SynonymClient
          * Will display any exceptions in the response text area
@@ -201,7 +201,7 @@ public class ClientGui {
             }
         }
 
-        /*
+        /**
          * Helper function which changes the GUI to its state once a connection
          * is created.
          * @param message a message to display in the response textarea with
@@ -215,14 +215,14 @@ public class ClientGui {
             textAreaResponseOutput.setText(message);
         }
 
-        /*
+        /**
          * Puts GUI in connected state, with default message simply "Connected"
          */
         private void clientConnect() {
             clientConnect("Connected");
         }
 
-        /*
+        /**
          * Puts the GUI in a disconnected state with message
          */
         private void clientDisconnect(String message) {
@@ -231,7 +231,7 @@ public class ClientGui {
             setMakeRequestEnabled(false);
             textAreaResponseOutput.setText(message);
         }
-        /*
+        /**
          * Puts the GUI in a disconnected state with just the message
          * "Disconnected"
          */
@@ -239,14 +239,14 @@ public class ClientGui {
             clientDisconnect("Disconnected");
         }
 
-        /*
+        /**
          * Listener for the button titled "Send Request"
          * Here we collect the request parameters from the GUI elements
          * and invoke the appropriate method on the SynonymClient
          */
         private class MakeRequestListener implements ActionListener {
 
-            /*
+            /**
              * When the Send Request button is clicked, this method Decides
              * which type of request to dispatch based on the current tab.
              */
@@ -261,7 +261,7 @@ public class ClientGui {
                 }
             }
 
-            /*
+            /**
              * Makes a GET request to the SynonymProtocol server
              */
             private void makeGet() {
@@ -277,7 +277,7 @@ public class ClientGui {
                     );
                 }
             }
-            /*
+            /**
              * Makes a SET request to the SynonymProtocol server
              */
             private void makeSet() {
@@ -295,7 +295,7 @@ public class ClientGui {
                 }
             }
 
-            /*
+            /**
              * Makes a REMOVE request to the SynonymProtocol server
              */
             private void makeRemove() {
@@ -322,7 +322,7 @@ public class ClientGui {
         this.controller = new SynonymClient();
     }
 
-    /*
+    /**
     * This code is adapted from
     * https://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html
     */
