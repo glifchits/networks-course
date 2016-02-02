@@ -17,6 +17,18 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
+/**
+ * ClientGui
+ *
+ * This class encapsulates the Synonym Protocol GUI.
+ * It only contains GUI elements and listeners for those GUI elements.
+ * Actual dispatching of requests is handled entirely in the SynonymClient.
+ *
+ * @author Dallas Fraser - 110242560
+ * @author George Lifchits - 100691350
+ * @version 1.0
+ * @see Class#SynonymClient
+ */
 public class ClientGui {
 
     private enum Tab {
@@ -227,8 +239,31 @@ public class ClientGui {
             clientDisconnect("Disconnected");
         }
 
+        /*
+         * Listener for the button titled "Send Request"
+         * Here we collect the request parameters from the GUI elements
+         * and invoke the appropriate method on the SynonymClient
+         */
         private class MakeRequestListener implements ActionListener {
 
+            /*
+             * When the Send Request button is clicked, this method Decides
+             * which type of request to dispatch based on the current tab.
+             */
+            public void actionPerformed(ActionEvent evt) {
+                switch (currentTab) {
+                    case GET:
+                    makeGet(); break;
+                    case SET:
+                    makeSet(); break;
+                    case REMOVE:
+                    makeRemove(); break;
+                }
+            }
+
+            /*
+             * Makes a GET request to the SynonymProtocol server
+             */
             private void makeGet() {
                 System.out.println("Make GET");
                 String word = textFieldGetWord.getText();
@@ -242,7 +277,9 @@ public class ClientGui {
                     );
                 }
             }
-
+            /*
+             * Makes a SET request to the SynonymProtocol server
+             */
             private void makeSet() {
                 System.out.println("Make SET");
                 String word1 = textFieldSetWordA.getText();
@@ -258,6 +295,9 @@ public class ClientGui {
                 }
             }
 
+            /*
+             * Makes a REMOVE request to the SynonymProtocol server
+             */
             private void makeRemove() {
                 System.out.println("Make REMOVE");
                 String word = textFieldRemoveWord.getText();
@@ -272,16 +312,6 @@ public class ClientGui {
                 }
             }
 
-            public void actionPerformed(ActionEvent evt) {
-                switch (currentTab) {
-                    case GET:
-                    makeGet(); break;
-                    case SET:
-                    makeSet(); break;
-                    case REMOVE:
-                    makeRemove(); break;
-                }
-            }
         }
 
     }
