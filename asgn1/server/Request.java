@@ -75,7 +75,7 @@ public class Request implements Runnable {
     public void run() {
 		try {
 		    this.processRequest();
-		} catch(SocketException){
+		} catch(SocketException e) {
 			this.logger.debug("The socket was closed on the other end");
 		} catch (Exception e) {
 			System.out.println("Error from process");

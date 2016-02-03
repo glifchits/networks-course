@@ -170,7 +170,7 @@ public class SynonymClient {
             String body = input.readLine();
             int code = parseHeaderCode(header);
             if (code == SUCCESS) {
-                return body;
+                return parseHeaderMessage(header);
             } else {
                 return parseHeaderMessage(header);
             }

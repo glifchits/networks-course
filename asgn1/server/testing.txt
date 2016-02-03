@@ -1,0 +1,131 @@
+--------------------------------------------------------------------------------
+author Dallas Fraser - 110242560
+author George Lifchits - 100691350
+class CP372
+date 2016-02-02
+--------------------------------------------------------------------------------
+
+SERVER TEST RESULTS
+-------------------------------------------------------------------------------
+C:\Users\Dallas\git\CP372\asgn1\server>java RunServer 5555 0
+Server running on port: 5555
+INFO - Request Line:SET HEY HELLO
+DEBUG - Incoming!!!
+DEBUG - SET HEY HELLO
+DEBUG - Method: SET
+DEBUG - Adding pair - hey : hello
+INFO - Request Line:GET HELO
+DEBUG - Incoming!!!
+DEBUG - GET HELO
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: helo
+DEBUG - Null Pointer when getting word: helo
+DEBUG - null
+INFO - Request Line:GET HELLO
+DEBUG - Incoming!!!
+DEBUG - GET HELLO
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: hello
+DEBUG - Item:hey
+DEBUG - Items:hey
+DEBUG - Resulting synonyms for word: hello - hey
+INFO - Request Line:SET HEY HI
+DEBUG - Incoming!!!
+DEBUG - SET HEY HI
+DEBUG - Method: SET
+DEBUG - Adding pair - hey : hi
+DEBUG - Adding word from Item: hello
+INFO - Request Line:GET HI
+DEBUG - Incoming!!!
+DEBUG - GET HI
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: hi
+DEBUG - Item:hey
+DEBUG - Item:hello
+DEBUG - Items:hey,hello
+DEBUG - Resulting synonyms for word: hi - hey,hello
+INFO - Request Line:REMOVE HEY
+DEBUG - Incoming!!!
+DEBUG - REMOVE HEY
+DEBUG - Method: REMOVE
+DEBUG - Removing word: hey
+DEBUG - Removing word from Item: hello
+DEBUG - Removing word from Item: hi
+INFO - Request Line:GET HEY
+DEBUG - Incoming!!!
+DEBUG - GET HEY
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: hey
+DEBUG - Null Pointer when getting word: hey
+DEBUG - null
+INFO - Request Line:GET HELLO
+DEBUG - Incoming!!!
+DEBUG - GET HELLO
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: hello
+DEBUG - Item:hi
+DEBUG - Items:hi
+DEBUG - Resulting synonyms for word: hello - hi
+INFO - Request Line:GET HI
+DEBUG - Incoming!!!
+DEBUG - GET HI
+DEBUG - Method: GET
+DEBUG - Get synonyms for word: hi
+DEBUG - Item:hello
+DEBUG - Items:hello
+DEBUG - Resulting synonyms for word: hi - hello
+
+TELNET RESULTS
+-------------------------------------------------------------------------------
+SET HELLO HEY
+SynonymProtocol/1.0 201 Created
+Content-Type: text/html
+
+
+GET HELO
+SynonymProtocol/1.0 404 Not found
+Content-Type: text/html
+
+HELO was not found
+GET HELLO
+SynonymProtocol/1.0 200 Successful
+Content-Type: text/html
+
+hey
+SET HEY HI
+SynonymProtocol/1.0 201 Created
+Content-Type: text/html
+
+
+GET HI
+SynonymProtocol/1.0 200 Successful
+Content-Type: text/html
+
+hey,hello
+REMOVE HEY
+SynonymProtocol/1.0 200 Successful
+Content-Type: text/html
+
+
+GET HEY
+SynonymProtocol/1.0 404 Not found
+Content-Type: text/html
+
+HEY was not found
+GET HELLO
+SynonymProtocol/1.0 200 Successful
+Content-Type: text/html
+
+hi
+GET HI
+SynonymProtocol/1.0 200 Successful
+Content-Type: text/html
+
+hello
+SynonymProtocol/1.0 408 RequestTimeout
+Content-Type: text/html
+
+The connection was closed due to inactivity
+
+
+Connection to host lost.
