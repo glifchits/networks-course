@@ -86,7 +86,8 @@ public class StopAndWaitReceiver {
 		this.fs = new FileOutputStream(new File(fileName));
 		this.logger.debug("Created receiver");
 		this.sequence = 0;
-		binaryFile = false;
+
+		binaryFile = true;
 	}
 	/**
 	* a method that receives a packet. 
@@ -102,7 +103,6 @@ public class StopAndWaitReceiver {
 			this.logger.debug(this.sequence + " vs " + data[0]);
 			if(data[0] == this.sequence && data[1] != 0){
 				this.logger.debug("Packet was right sequence");
-				this.sequence = (this.sequence + 1) % 2; // update the sequence number
 				if(data[1] == 127){
 					// we are done
 					this.logger.debug("Finish the file");
@@ -163,7 +163,11 @@ public class StopAndWaitReceiver {
 	private void acknowledge() throws IOException {
 		// TODO Auto-generated method stub
 		this.logger.debug("Acknowleding the packet");
+		byte[] data = new byte[1];
+		data[0] = (byte) this.sequence;
+		this.out_packet.setData(data);
 		this.socket.send(this.out_packet);
+		this.sequence = (this.sequence + 1) % 2; // update the sequence number
 		this.logger.debug("Packet shoudl be ack");
 		
 	}
@@ -197,19 +201,19 @@ public class StopAndWaitReceiver {
 			int reliabilityNumber = new Integer(args[3]).intValue();
 			String fileName = args[4];
 			Logger log;
-			if (args.length >= 5){
+			if (args.length > 5){
 				// logging level was set
 				log = new Logger(new Integer(args[5]).intValue());
 			}else{
-				logger = new Logger(2);	
+				log = new Logger(2);	
 			}
 			StopAndWaitReceiver gb = new StopAndWaitReceiver(hostAddress,
 															senderPort,
 															receiverPort,
 															reliabilityNumber,
 															fileName,
-															logger);
-			logger.debug("Created");
+															log);
+			log.debug("Created");
 			gb.receiveFile();
 		}catch(Exception e){
 			e.printStackTrace();

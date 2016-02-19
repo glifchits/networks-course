@@ -89,6 +89,15 @@ public class StopAndWaitSender {
 			if (!this.in_packet.getAddress().equals(this.ia)){
 				this.logger.debug("Not from the send address");
 				this.sendPacket();
+			}else{
+				if(this.in_packet.getData()[0] == this.sequence){
+					this.logger.debug("Package was ack");
+					this.sequence = (this.sequence + 1) % 2; // update the sequence number	
+				}else{
+					this.logger.debug("Acknowledgement for wrong package");
+					this.sendPacket();
+				}
+				
 			}
 		}catch(SocketTimeoutException e) {
 			this.logger.debug("Timeout occurred so resending packet");
@@ -103,7 +112,6 @@ public class StopAndWaitSender {
 			
 			data[0] = (byte) this.sequence; // set the sequence number
 			data[1] = (byte) bytesRead; //send number of bytes read
-			this.sequence = (this.sequence + 1) % 2; // update the sequence number
 			this.out_packet.setData(data); //set date of the packet
 			this.sendPacket();			
 		}
