@@ -31,7 +31,7 @@ public class SynonymClient {
         input = null;
     }
 
-    /*
+    /**
      * Creates a connection to the SynonymProtocol server.
      *
      * @param ipAddress the IP address of the server
@@ -46,14 +46,14 @@ public class SynonymClient {
         return true;
     }
 
-    /*
+    /**
      * @returns whether this client instance is connected to a server
      */
     public boolean isConnected() {
         return socket != null;
     }
 
-    /*
+    /**
      * Use this method to guarantee that the client is connected to a server
      * before attempting to interact with it.
      *
@@ -65,7 +65,7 @@ public class SynonymClient {
         }
     }
 
-    /*
+    /**
      * Sends the disconnect message to the server, signalling that we wish to
      * terminate the connection to the server.
      * @throws Exception if there is no connection to the server or if there
@@ -76,7 +76,7 @@ public class SynonymClient {
         output.writeBytes(CRLF); // sends an empty line, signals disconnect
     }
 
-    /*
+    /**
      * An all in one method which wraps all necessary functionality to
      * disconnect from the server.
      */
@@ -88,7 +88,7 @@ public class SynonymClient {
 
     /* Methods for interacting with the Synonym Protocol */
 
-    /*
+    /**
      * Sends a GET to the server: gets synonyms of a word
      *
      * @param getWord the string whose synonyms we want to retrieve
@@ -121,7 +121,7 @@ public class SynonymClient {
         }
     }
 
-    /*
+    /**
      * Sends a SET to the server: defines two words as synonyms of each other
      *
      * @param word1 set word1 to be synonym of word2
@@ -151,7 +151,7 @@ public class SynonymClient {
         }
     }
 
-    /*
+    /**
      * Sends a REMOVE to the server: choose a word to remove from the server's
      * memory of synonyms
      *
@@ -170,7 +170,7 @@ public class SynonymClient {
             String body = input.readLine();
             int code = parseHeaderCode(header);
             if (code == SUCCESS) {
-                return body;
+                return parseHeaderMessage(header);
             } else {
                 return parseHeaderMessage(header);
             }
@@ -181,7 +181,7 @@ public class SynonymClient {
         }
     }
 
-    /*
+    /**
      * Retrieves the response status code by parsing the response header
      *
      * @param header the response header
@@ -201,7 +201,7 @@ public class SynonymClient {
         return code;
     }
 
-    /*
+    /**
      * Retrieves the response message by parsing the response header
      *
      * @param header the response header
