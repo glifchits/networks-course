@@ -110,8 +110,34 @@ public class Logger {
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * a method to log the byte array if in debug mode
+	 * @param a: the byte array
+	 */	
 	public void debug(byte[] a){
+		if (this.mode == DEBUG ){
+			System.out.println(Arrays.toString(a));
+		}
+	}
+
+	/**
+	 * a method to log the byte array
+	 * @param a: the byte array
+	*/
+	public void info(byte[] a){
+		if(this.mode != PRODUCTION){
+			System.out.println(Arrays.toString(a));			
+		}
+	}
+
+	/**
+	 * a method to log the byte array
+	 * @param a: the byte array
+	*/
+	public void error(byte[] a){
 		System.out.println(Arrays.toString(a));
 	}
+	
+
 }

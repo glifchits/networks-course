@@ -1,4 +1,6 @@
-
+/**
+* Imports 
+*/
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,10 +17,34 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+/**
+ * The stop and wait receiver. It has a buffer of 128 bytes.
+ * It will acknowledge each packet by returning one byte with a value of 1. It follows 
+ * the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach .
+ * The receiver will acknowledge the packet sequence number processed.
+ *
+ * @author Dallas Fraser - 110242560
+ * @author George Lifchits - 100691350
+ * @version 1.0
+ * @see Class#DGSocket
+ */
 public class StopAndWaitReceiver {
+	/**
+	* 
+	* {@link socket}: the UPD socket 
+	* @see Class#DGSocket
+	* {@link logger}: the logger for the class 
+	* @see Class#Logger
+	* {@link fs}: the file output stream when transfering binary files
+	* {@link fw}: the file writer for text files
+	* {@link out_packet}: the datagram packet for responding
+	* {@link in_packet}: the datagram packet for receiving
+	* {@link ia}: the internet address of the sender
+	* @see Class#
+	* {@link sequence}: the sequence number of package (0 or 1)
+	*/
 	DGSocket socket;
 	Logger logger;
-	PrintWriter out;
 	FileOutputStream fs;
 	FileWriter fw;
 	DatagramPacket out_packet;
@@ -26,12 +52,27 @@ public class StopAndWaitReceiver {
 	InetAddress ia;
 	int sequence;
 	boolean binaryFile;
+	/**
+	* The public constructor
+	* @param hostAddress: a String of the host address
+	* @param senderPort: the port number of the sender
+	* @param receiverPort: the port number of this receiver
+	* @param reliabilityNumber: the reliability number of the server @see Class#DGSocket
+	* @param fileName: the name of the file to output
+	* @param logger: the logger of the class
+	*
+	* @throws IOException if unable to access file, create socket
+	* @thorws UnknownHostException if unable to find address for host
+	* @throws SocketException if unable to create UDP socket
+	*/
 	public StopAndWaitReceiver(String hostAddress,
 								int senderPort,
 								int receiverPort,
 								int reliabilityNumber,
 								String fileName,
-								Logger logger) throws IOException  {
+								Logger logger) throws IOException,
+														UnknownHostException,
+														SocketException  {
 		this.socket = new DGSocket(receiverPort, reliabilityNumber, logger);
 		this.logger = logger;
 		this.ia = InetAddress.getByName(hostAddress);
@@ -47,7 +88,11 @@ public class StopAndWaitReceiver {
 		this.sequence = 0;
 		binaryFile = false;
 	}
-
+	/**
+	* a method that receives a packet. 
+	* It will call itself recursively until the packet is received
+	* @throws IOException: this occurs when the socket is unable to receive a packet
+	*/
 	public int receivePacket() throws IOException{
 		int result = -1;
 		try{
@@ -63,6 +108,7 @@ public class StopAndWaitReceiver {
 					this.logger.debug("Finish the file");
 					this.saveFile();
 				}else{
+					// packet was recieved and should write to the file
 					result = 0;
 					this.writeFile(data);
 				}
@@ -77,7 +123,13 @@ public class StopAndWaitReceiver {
 		}
 		return result;
 	}
-	
+
+	/**
+	* write the data file using the appropriate output object
+	* It will acknowledge the packet was processed
+	* @param data: the byte data to output
+	* @throws IOException: this occurs when unable to write to the file
+	*/
 	private void writeFile(byte[] data) throws IOException {
 		// TODO Auto-generated method stub
 		if(this.binaryFile){
@@ -88,6 +140,11 @@ public class StopAndWaitReceiver {
 		this.acknowledge();
 	}
 
+	/**
+	* save the file and closes it
+	* It will acknowledge the file was closed
+	* @throws IOException: this occurs when unable to close the file
+	*/
 	private void saveFile() throws IOException {
 		// TODO Auto-generated method stub
 		if(this.binaryFile){
@@ -99,6 +156,10 @@ public class StopAndWaitReceiver {
 		this.logger.debug("Finished closing file");
 	}
 	
+	/**
+	* acknowledges the packet sequence was processed
+	* @throws IOException: occurs when unable to send ack
+	*/
 	private void acknowledge() throws IOException {
 		// TODO Auto-generated method stub
 		this.logger.debug("Acknowleding the packet");
@@ -107,11 +168,24 @@ public class StopAndWaitReceiver {
 		
 	}
 
+	/**
+	* this will continually receive packet until final packet is signaled
+	* @throws IOException: occurs in various submethods
+	*/
 	public void receiveFile() throws IOException{
 		while (this.receivePacket() >= 0 ){
 			this.logger.debug("receiving Packet");
 		}
 	}
+	/**
+	* There are 5 mandatory parameters  and on option parameter
+	* @param 0:hostAddress: a string of the host address
+	* @param 1: the sender port number
+	* @param 2: the receiver port number 
+	* @param 3: the reliability number of the receiver
+	* @param 4: the file name
+	* @param 5: the logging level
+	*/
 	public static void main(String[] args) {
 		try{
 			if (args.length < 5){
@@ -122,7 +196,13 @@ public class StopAndWaitReceiver {
 			int receiverPort = new Integer(args[2]).intValue();
 			int reliabilityNumber = new Integer(args[3]).intValue();
 			String fileName = args[4];
-			Logger logger = new Logger(0);
+			Logger log;
+			if (args.length >= 5){
+				// logging level was set
+				log = new Logger(new Integer(args[5]).intValue());
+			}else{
+				logger = new Logger(2);	
+			}
 			StopAndWaitReceiver gb = new StopAndWaitReceiver(hostAddress,
 															senderPort,
 															receiverPort,
