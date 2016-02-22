@@ -2,7 +2,6 @@
  * Imports
  */
 
-package a2;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +51,6 @@ public class GoBackNSender {
 	*/
 	private DGSocket socket;
 	private Logger logger;
-	private DatagramPacket temp_packet;
 	private DatagramPacket in_packet;
 	private PackageWindow pw;
 	private FileInputStream fp;
@@ -62,6 +60,7 @@ public class GoBackNSender {
 	private static int WAITTIME = 10000; // wait time in milliseconds
 	private int packetNumber;
 	private boolean doneReading;
+	private int receiverPort;
 	/**
 	 * the deagilt constructor
 	 * the public constructor
@@ -87,7 +86,7 @@ public class GoBackNSender {
 		this.ia = InetAddress.getByName(hostAddress);
 		byte[] data = new byte[128];
 		byte[] in_data = new byte[1];
-		this.temp_packet = new DatagramPacket(data, data.length, this.ia, receiverPort);
+		this.receiverPort = receiverPort;
 		this.in_packet = new DatagramPacket(in_data, in_data.length, this.ia, receiverPort);
 		this.socket.setSoTimeout(WAITTIME);
 		this.fp = new FileInputStream(new File(fileName));
@@ -103,21 +102,20 @@ public class GoBackNSender {
 	 * @return ready: whether the is  a packet ready to be sent or not
 	 * @throws IOException
 	 */
-	public boolean readyPacket() throws IOException{
+	public DatagramPacket readyPacket() throws IOException{
 		byte[] data = new byte[128];
 		int bytesRead;
 		boolean ready = false;
+		DatagramPacket dp = null;
 		if (!doneReading && (bytesRead = this.fp.read(data, 2, 126)) > 0){
 			data[0] = (byte) this.packetNumber; // set the packet number
 			data[1] = (byte) bytesRead; //send number of bytes read
-			this.temp_packet.setData(data); //set date of the packet
-
+			dp = new DatagramPacket(data, data.length, this.ia, receiverPort);
 			ready = true;
 		}else{
 			this.doneReading = true;
-			ready = false;
 		}
-		return ready;
+		return dp;
 	}
 
 	/**
@@ -139,9 +137,9 @@ public class GoBackNSender {
 				this.logger.debug("Not from the send address");
 				this.receivePacket(); // may need to resend
 			}else{
-				this.sequence = (this.sequence + 1) % 2; // update the sequence number
+				this.sequence = (this.sequence + 1) % 128; // update the sequence number
 				boolean moved = this.pw.movePackageWindow(this.in_packet.getData()[0]);
-				if (!moved){
+				if (!moved && !this.pw.doneYet()){
 					this.receivePacket(); // not a valid ack or moved window
 				}
 			}
@@ -163,8 +161,10 @@ public class GoBackNSender {
 		byte[] data = new byte[128];
 		data[0] = (byte) this.sequence; // set the sequence number
 		data[1] = (byte) 127; //send number of bytes read		
-		this.temp_packet.setData(data);
+		DatagramPacket dp = new DatagramPacket(data, data.length, this.ia, receiverPort);
+		this.logger.debug("Signaling the file is done transferring");
 		try{
+			this.socket.send(dp);
 			this.socket.receive(this.in_packet);
 			if (!this.in_packet.getAddress().equals(this.ia)){
 				this.logger.debug("Not from the send address");
@@ -190,10 +190,10 @@ public class GoBackNSender {
 	 */
 	public void sendFile() throws Exception{
 		boolean done = false;
+		DatagramPacket dp;
 		while(!done){
-			while(!this.pw.windowFull() && this.readyPacket()){
-				this.readyPacket(); // ready the packet
-				this.pw.appendPackage(this.packetNumber, this.temp_packet); // add the packet to the window
+			while(!this.pw.windowFull() && (dp = this.readyPacket()) != null){
+				this.pw.appendPackage(this.packetNumber, dp); // add the packet to the window
 				this.logger.debug("Adding packet: " + this.packetNumber);
 				this.packetNumber = (this.packetNumber + 1) % 128;
 			}
@@ -201,6 +201,7 @@ public class GoBackNSender {
 			this.lastSent = System.nanoTime();
 			this.receivePacket();
 			done = this.pw.doneYet(); // all packages have been acknowledged
+			this.logger.debug("Done yet: " + done + " " + this.doneReading);
 			if (done && !this.doneReading){
 				done = this.doneReading; // still need to read some packages
 			}

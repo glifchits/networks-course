@@ -1,7 +1,6 @@
 /**
  * Imports
  */
-package a2;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -103,6 +102,7 @@ public class PackageWindow {
 		while (current != null){
 			this.logger.debug("Sending package: " + current.sequence);
 			socket.send(current.dp);
+			this.logger.debug(current.dp.getData());
 			current = current.next;
 		}
 	}
