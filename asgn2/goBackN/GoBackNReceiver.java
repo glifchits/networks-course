@@ -1,26 +1,25 @@
 /**
-* Imports 
-*/
+ * Imports
+ */
+package a2;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-
 /**
- * The stop and wait receiver. It has a buffer of 128 bytes.
- * It will acknowledge each packet by returning one byte with a value of sequence number.
- * It follows the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach .
+ * The go back n receiver. It has a buffer of 128 bytes.
+ * It will acknowledge each packet by returning one byte with a value of the sequence number.
+ * It follows the standard GBN from Computer Networking: A Top-Down Approach .
  * The receiver will acknowledge the packet sequence number processed.
  *
  * @author Dallas Fraser - 110242560
@@ -28,7 +27,8 @@ import java.net.UnknownHostException;
  * @version 1.0
  * @see Class#DGSocket
  */
-public class StopAndWaitReceiver {
+
+public class GoBackNReceiver {
 	/**
 	* 
 	* {@link socket}: the UPD socket 
@@ -45,6 +45,7 @@ public class StopAndWaitReceiver {
 	*/
 	private DGSocket socket;
 	private Logger logger;
+	private PrintWriter out;
 	private FileOutputStream fs;
 	private FileWriter fw;
 	private DatagramPacket out_packet;
@@ -65,29 +66,31 @@ public class StopAndWaitReceiver {
 	* @throws UnknownHostException if unable to find address for host
 	* @throws SocketException if unable to create UDP socket
 	*/
-	public StopAndWaitReceiver(String hostAddress,
-								int senderPort,
-								int receiverPort,
-								int reliabilityNumber,
-								String fileName,
-								Logger logger) throws IOException,
-														UnknownHostException,
-														SocketException  {
+	public GoBackNReceiver(String hostAddress,
+							int senderPort,
+							int receiverPort,
+							int reliabilityNumber,
+							String fileName,
+							Logger logger) throws IOException {
 		this.socket = new DGSocket(receiverPort, reliabilityNumber, logger);
 		this.logger = logger;
-		this.ia = InetAddress.getByName(hostAddress);
-		byte[] data = new byte[1];
-		data[0] = (byte) 1;
+		InetAddress ia = InetAddress.getByName(hostAddress);
 		byte[] in_data = new byte[128];
-		this.out_packet = new DatagramPacket(data, data.length, this.ia, senderPort);
-		this.in_packet = new DatagramPacket(in_data, in_data.length, this.ia, senderPort);
-		this.socket.setSoTimeout(5000);
+		byte[] out_data = new byte[1];
+		out_data[0] = (byte) 1;
+		this.in_packet = new DatagramPacket(in_data,
+											in_data.length,
+											ia,
+											senderPort);
+		this.out_packet = new DatagramPacket(out_data,
+												out_data.length,
+												ia,
+												senderPort);
 		this.fw = new FileWriter(new File(fileName));
 		this.fs = new FileOutputStream(new File(fileName));
 		this.logger.debug("Created receiver");
 		this.sequence = 0;
-
-		binaryFile = true;
+		this.binaryFile = true;
 	}
 
 	/**
@@ -126,6 +129,16 @@ public class StopAndWaitReceiver {
 	}
 
 	/**
+	* this will continually receive packet until final packet is signaled
+	* @throws IOException: occurs in various submethods
+	*/
+	public void receiveFile() throws IOException{
+		while (this.receivePacket() >= 0 ){
+			this.logger.debug("receiving Packet");
+		}
+	}
+
+	/**
 	* write the data file using the appropriate output object
 	* It will acknowledge the packet was processed
 	* @param data: the byte data to output
@@ -156,7 +169,7 @@ public class StopAndWaitReceiver {
 		this.acknowledge();
 		this.logger.debug("Finished closing file");
 	}
-	
+
 	/**
 	* acknowledges the packet sequence was processed
 	* @throws IOException: occurs when unable to send ack
@@ -168,19 +181,9 @@ public class StopAndWaitReceiver {
 		data[0] = (byte) this.sequence;
 		this.out_packet.setData(data);
 		this.socket.send(this.out_packet);
-		this.sequence = (this.sequence + 1) % 2; // update the sequence number
+		this.sequence = (this.sequence + 1) % 128; // update the sequence number
 		this.logger.debug("Packet shoudl be ack");
 		
-	}
-
-	/**
-	* this will continually receive packet until final packet is signaled
-	* @throws IOException: occurs in various submethods
-	*/
-	public void receiveFile() throws IOException{
-		while (this.receivePacket() >= 0 ){
-			this.logger.debug("receiving Packet");
-		}
 	}
 
 	/**
@@ -193,6 +196,7 @@ public class StopAndWaitReceiver {
 	* @param 5: the logging level
 	*/
 	public static void main(String[] args) {
+		// TODO Auto-generated method stub
 		try{
 			if (args.length < 5){
 				throw new Exception("Missing an arugment: hostAddress senderPort receiverPort reliabilityNumber fileName");
@@ -202,20 +206,14 @@ public class StopAndWaitReceiver {
 			int receiverPort = new Integer(args[2]).intValue();
 			int reliabilityNumber = new Integer(args[3]).intValue();
 			String fileName = args[4];
-			Logger log;
-			if (args.length > 5){
-				// logging level was set
-				log = new Logger(new Integer(args[5]).intValue());
-			}else{
-				log = new Logger(2);	
-			}
-			StopAndWaitReceiver gb = new StopAndWaitReceiver(hostAddress,
-															senderPort,
-															receiverPort,
-															reliabilityNumber,
-															fileName,
-															log);
-			log.debug("Created");
+			Logger logger = new Logger(0);
+			GoBackNReceiver gb = new GoBackNReceiver(hostAddress,
+														senderPort,
+														receiverPort,
+														reliabilityNumber,
+														fileName,
+														logger);
+			logger.debug("Created");
 			gb.receiveFile();
 		}catch(Exception e){
 			e.printStackTrace();
