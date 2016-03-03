@@ -41,13 +41,13 @@ public class StopAndWaitSender {
 	* @see Class#
 	* {@link sequence}: the sequence number of package (0 or 1)
 	*/
-	DGSocket socket;
-	Logger logger;
-	DatagramPacket out_packet;
-	DatagramPacket in_packet;
-	FileInputStream fp;
-	InetAddress ia;
-	int sequence;
+	private DGSocket socket;
+	private Logger logger;
+	private DatagramPacket out_packet;
+	private DatagramPacket in_packet;
+	private FileInputStream fp;
+	private InetAddress ia;
+	private int sequence;
 	/**
 	* the public constructor
 	* @param hostAddress: a String of the host address
