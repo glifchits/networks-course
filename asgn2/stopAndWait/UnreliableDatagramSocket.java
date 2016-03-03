@@ -13,14 +13,14 @@ import java.net.SocketException;
  * @version 1.0
  * @see Class#DatagramSocket
  */
-public class DGSocket extends DatagramSocket {
+public class UnreliableDatagramSocket extends DatagramSocket {
 	private int reliability;
 	private Logger logger;
 	private int count;
 	/**
 	 *  the public constructor
 	 */
-	public DGSocket()throws SocketException {
+	public UnreliableDatagramSocket() throws SocketException {
 		// TODO Auto-generated constructor stub
 		super(5555);
 		this.reliability = 0;
@@ -32,26 +32,26 @@ public class DGSocket extends DatagramSocket {
 	* @param port: the port number
 	* @param logger: the logger to use
 	*/
-	public DGSocket(int port, Logger logger)throws SocketException{
+	public UnreliableDatagramSocket(int port, Logger logger) throws SocketException{
 		super(port);
 		this.reliability = 0;
 		this.logger = logger;
 		this.count = 0;
 	}
-	
+
 	/**
 	* a public construcotr where port, reliability, logger are specified
 	* @param port: the port number
 	* @param reliability: the reliability number
 	* @param logger: the logger to use
 	*/
-	public DGSocket(int port, int reliability, Logger logger) throws SocketException{
+	public UnreliableDatagramSocket(int port, int reliability, Logger logger) throws SocketException{
 		super(port);
 		this.reliability = reliability;
 		this.logger = logger;
 		this.count = 0;
 	}
-	
+
 	/**
 	* receive a datagram packet
 	* the pack will be dropped depending on the reliability number
