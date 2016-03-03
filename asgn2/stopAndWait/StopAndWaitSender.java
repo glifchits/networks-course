@@ -29,7 +29,6 @@ import java.util.Arrays;
  */
 public class StopAndWaitSender {
 	/**
-	*
 	* {@link socket}: the UPD socket
 	* @see Class#UnreliableDatagramSocket
 	* {@link logger}: the logger for the class
@@ -79,9 +78,10 @@ public class StopAndWaitSender {
 		this.logger.debug("Created sender");
 		this.sequence = 0;
 	}
-	public void sendPacket() throws IOException{
+
+	public void sendPacket() throws IOException {
 		this.logger.debug("Sending packet");
-		try{
+		try {
 			this.logger.debug(this.out_packet.getData());
 			this.socket.send(this.out_packet);
 			this.socket.receive(this.in_packet);
@@ -99,13 +99,13 @@ public class StopAndWaitSender {
 				}
 
 			}
-		}catch(SocketTimeoutException e) {
+		} catch(SocketTimeoutException e) {
 			this.logger.debug("Timeout occurred so resending packet");
 			this.sendPacket();
 		}
 
 	}
-	public void sendFile() throws IOException{
+	public void sendFile() throws IOException {
 		byte[] data = new byte[128];
 		int bytesRead;
 		while ((bytesRead = this.fp.read(data, 2, 126)) > 0){
@@ -125,9 +125,9 @@ public class StopAndWaitSender {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		try{
-			if (args.length < 4){
-				throw new Exception("Missing an arugment: hostAddress receiverPort senderPort  fileName");
+		try {
+			if (args.length < 4) {
+				throw new Exception("Missing an argument: hostAddress receiverPort senderPort fileName");
 			}
 			String hostAddress = args[0];
 			int receiverPort = new Integer(args[1]).intValue();
@@ -137,7 +137,7 @@ public class StopAndWaitSender {
 			if (args.length > 4){
 				int level = new Integer(args[4]).intValue();
 				log = new Logger(level);
-			}else{
+			} else {
 				log = new Logger(0);
 			}
 			log.debug(fileName);
@@ -147,7 +147,7 @@ public class StopAndWaitSender {
 															fileName,
 															log);
 			sw.sendFile();
-		}catch(Exception e){
+		} catch(Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}

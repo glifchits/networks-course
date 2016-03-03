@@ -31,11 +31,11 @@ import java.net.UnknownHostException;
 public class StopAndWaitReceiver {
 	/**
 	*
-	* {@link socket}: the UPD socket
+	* {@link socket}: the UDP socket
 	* @see Class#DGSocket
 	* {@link logger}: the logger for the class
 	* @see Class#Logger
-	* {@link fs}: the file output stream when transfering binary files
+	* {@link fs}: the file output stream when transferring binary files
 	* {@link fw}: the file writer for text files
 	* {@link out_packet}: the datagram packet for responding
 	* {@link in_packet}: the datagram packet for receiving
@@ -52,6 +52,7 @@ public class StopAndWaitReceiver {
 	private InetAddress ia;
 	private int sequence;
 	private boolean binaryFile;
+
 	/**
 	* The public constructor
 	* @param hostAddress: a String of the host address
@@ -95,30 +96,30 @@ public class StopAndWaitReceiver {
 	* It will call itself recursively until the packet is received
 	* @throws IOException: this occurs when the socket is unable to receive a packet
 	*/
-	public int receivePacket() throws IOException{
+	public int receivePacket() throws IOException {
 		int result = -1;
-		try{
+		try {
 			this.socket.receive(this.in_packet);
 			byte[] data = this.in_packet.getData();
 			this.logger.debug(data);
 			this.logger.debug(this.sequence + " vs " + data[0]);
-			if(data[0] == this.sequence && data[1] != 0){
+			if (data[0] == this.sequence && data[1] != 0) {
 				this.logger.debug("Packet was right sequence");
-				if(data[1] == 127){
+				if (data[1] == 127) {
 					// we are done
 					this.logger.debug("Finish the file");
 					this.saveFile();
-				}else{
+				} else {
 					// packet was recieved and should write to the file
 					result = 0;
 					this.writeFile(data);
 				}
-			}else{
+			} else {
 				// just drop the packet
 				result = 0;
 				this.logger.debug("Packet was invalid sequence");
 			}
-		}catch(SocketTimeoutException e){
+		} catch(SocketTimeoutException e) {
 			this.logger.debug("Timeout exception");
 			result = this.receivePacket();
 		}
@@ -132,10 +133,9 @@ public class StopAndWaitReceiver {
 	* @throws IOException: this occurs when unable to write to the file
 	*/
 	private void writeFile(byte[] data) throws IOException {
-		// TODO Auto-generated method stub
-		if(this.binaryFile){
+		if (this.binaryFile) {
 			this.fs.write(data, 2, data[1]);
-		}else{
+		} else {
 			this.fw.write(new String(data,"UTF-8"), 2, data[1]);
 		}
 		this.acknowledge();
@@ -147,10 +147,9 @@ public class StopAndWaitReceiver {
 	* @throws IOException: this occurs when unable to close the file
 	*/
 	private void saveFile() throws IOException {
-		// TODO Auto-generated method stub
-		if(this.binaryFile){
+		if (this.binaryFile) {
 			this.fs.close();
-		}else{
+		} else {
 			this.fw.close();
 		}
 		this.acknowledge();
@@ -162,7 +161,6 @@ public class StopAndWaitReceiver {
 	* @throws IOException: occurs when unable to send ack
 	*/
 	private void acknowledge() throws IOException {
-		// TODO Auto-generated method stub
 		this.logger.debug("Acknowleding the packet");
 		byte[] data = new byte[1];
 		data[0] = (byte) this.sequence;
@@ -177,8 +175,8 @@ public class StopAndWaitReceiver {
 	* this will continually receive packet until final packet is signaled
 	* @throws IOException: occurs in various submethods
 	*/
-	public void receiveFile() throws IOException{
-		while (this.receivePacket() >= 0 ){
+	public void receiveFile() throws IOException {
+		while (this.receivePacket() >= 0) {
 			this.logger.debug("receiving Packet");
 		}
 	}
@@ -193,9 +191,9 @@ public class StopAndWaitReceiver {
 	* @param 5: the logging level
 	*/
 	public static void main(String[] args) {
-		try{
-			if (args.length < 5){
-				throw new Exception("Missing an arugment: hostAddress senderPort receiverPort reliabilityNumber fileName");
+		try {
+			if (args.length < 5) {
+				throw new Exception("Missing an argument: hostAddress senderPort receiverPort reliabilityNumber fileName");
 			}
 			String hostAddress = args[0];
 			int senderPort = new Integer(args[1]).intValue();
@@ -203,10 +201,10 @@ public class StopAndWaitReceiver {
 			int reliabilityNumber = new Integer(args[3]).intValue();
 			String fileName = args[4];
 			Logger log;
-			if (args.length > 5){
+			if (args.length > 5) {
 				// logging level was set
 				log = new Logger(new Integer(args[5]).intValue());
-			}else{
+			} else {
 				log = new Logger(2);
 			}
 			StopAndWaitReceiver gb = new StopAndWaitReceiver(hostAddress,
@@ -217,7 +215,7 @@ public class StopAndWaitReceiver {
 															log);
 			log.debug("Created");
 			gb.receiveFile();
-		}catch(Exception e){
+		} catch(Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
