@@ -47,6 +47,11 @@ public class StopAndWaitSender {
 	private FileInputStream fp;
 	private InetAddress ia;
 	private int sequence;
+
+	private int DATA_BUF = 124;
+	private int END_BYTES = DATA_BUF + 1; // 1 + maximum data buf size
+	private int PACKET_SIZE = DATA_BUF + 2; // 1 byte for seq# and 1 for packet size
+
 	/**
 	* the public constructor
 	* @param hostAddress: a String of the host address
@@ -69,7 +74,7 @@ public class StopAndWaitSender {
 		this.socket = new UnreliableDatagramSocket(senderPort, logger);
 		this.logger = logger;
 		this.ia = InetAddress.getByName(hostAddress);
-		byte[] data = new byte[128];
+		byte[] data = new byte[PACKET_SIZE];
 		byte[] in_data = new byte[1];
 		this.out_packet = new DatagramPacket(data, data.length, this.ia, receiverPort);
 		this.in_packet = new DatagramPacket(in_data, in_data.length, this.ia, receiverPort);
@@ -107,9 +112,9 @@ public class StopAndWaitSender {
 	}
 
 	public void sendFile() throws IOException {
-		byte[] data = new byte[128];
+		byte[] data = new byte[PACKET_SIZE];
 		int bytesRead;
-		while ((bytesRead = this.fp.read(data, 2, 126)) > 0) {
+		while ((bytesRead = this.fp.read(data, 2, DATA_BUF)) > 0) {
 			data[0] = (byte) this.sequence; // set the sequence number
 			data[1] = (byte) bytesRead; // send number of bytes read
 			this.out_packet.setData(data); // set data of the packet
@@ -117,7 +122,7 @@ public class StopAndWaitSender {
 		}
 		// signal the file is done
 		data[0] = (byte) this.sequence; // set the sequence number
-		data[1] = (byte) 127; // send number of bytes read
+		data[1] = (byte) END_BYTES; // send number of bytes read
 		this.out_packet.setData(data);
 		this.sendPacket();
 		this.logger.debug("Done sending file");

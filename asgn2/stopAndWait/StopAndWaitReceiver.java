@@ -104,7 +104,7 @@ public class StopAndWaitReceiver {
 			this.logger.debug("Expected seq num " + this.sequence + ". Got " + data[0]);
 			if (data[0] == this.sequence && data[1] != 0) {
 				this.logger.debug("Packet was right sequence");
-				if (data[1] == 127) {
+				if (data[1] == 125) {
 					// we are done
 					this.logger.debug("Finish the file");
 					this.saveFile();
