@@ -101,8 +101,7 @@ public class StopAndWaitReceiver {
 		try {
 			this.socket.receive(this.in_packet);
 			byte[] data = this.in_packet.getData();
-			this.logger.debug(data);
-			this.logger.debug(this.sequence + " vs " + data[0]);
+			this.logger.debug("Expected seq num " + this.sequence + ". Got " + data[0]);
 			if (data[0] == this.sequence && data[1] != 0) {
 				this.logger.debug("Packet was right sequence");
 				if (data[1] == 127) {
@@ -161,14 +160,13 @@ public class StopAndWaitReceiver {
 	* @throws IOException: occurs when unable to send ack
 	*/
 	private void acknowledge() throws IOException {
-		this.logger.debug("Acknowleding the packet");
+		this.logger.debug("Acknowledging the packet");
 		byte[] data = new byte[1];
 		data[0] = (byte) this.sequence;
 		this.out_packet.setData(data);
 		this.socket.send(this.out_packet);
 		this.sequence = (this.sequence + 1) % 2; // update the sequence number
-		this.logger.debug("Packet shoudl be ack");
-
+		this.logger.debug("Packet should be ack");
 	}
 
 	/**
@@ -177,7 +175,7 @@ public class StopAndWaitReceiver {
 	*/
 	public void receiveFile() throws IOException {
 		while (this.receivePacket() >= 0) {
-			this.logger.debug("receiving Packet");
+			this.logger.debug("Receiving packet");
 		}
 	}
 

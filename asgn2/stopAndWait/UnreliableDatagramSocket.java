@@ -55,12 +55,15 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	* @param p: the datagram packet to be used
 	*/
 	public void receive(DatagramPacket pkt) throws IOException {
-		this.logger.debug("Receiving datagram packet");
+		this.logger.debug("Called `receive()` on datagram socket");
 		if (this.reliability == 0) {
-			this.logger.debug("Packet was received");
 			super.receive(pkt);
-		} else if (rand.nextInt(this.reliability-1) == 0) {
+			this.logger.debug("Packet was received");
+		} else if (this.reliability == 1 || rand.nextInt(this.reliability) == 0) {
 			this.logger.debug("Packet was dropped");
+		} else {
+			super.receive(pkt);
+			this.logger.debug("Packet was received");
 		}
 		return;
 	}

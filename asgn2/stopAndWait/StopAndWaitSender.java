@@ -29,7 +29,7 @@ import java.util.Arrays;
  */
 public class StopAndWaitSender {
 	/**
-	* {@link socket}: the UPD socket
+	* {@link socket}: the UDP socket
 	* @see Class#UnreliableDatagramSocket
 	* {@link logger}: the logger for the class
 	* @see Class#Logger
@@ -79,52 +79,51 @@ public class StopAndWaitSender {
 		this.sequence = 0;
 	}
 
+	/**
+	 * Sends the outgoing packet
+	 */
 	public void sendPacket() throws IOException {
-		this.logger.debug("Sending packet");
 		try {
-			this.logger.debug(this.out_packet.getData());
+			this.logger.debug("Sending packet");
 			this.socket.send(this.out_packet);
 			this.socket.receive(this.in_packet);
-			this.logger.debug("Got response");
-			if (!this.in_packet.getAddress().equals(this.ia)){
-				this.logger.debug("Not from the send address");
+			this.logger.debug("Got an incoming packet");
+			if (!this.in_packet.getAddress().equals(this.ia)) {
+				this.logger.debug("... not from the receiver address, resending packet");
 				this.sendPacket();
-			}else{
-				if(this.in_packet.getData()[0] == this.sequence){
-					this.logger.debug("Package was ack");
+			} else {
+				if (this.in_packet.getData()[0] == this.sequence) {
+					this.logger.debug("Packet was ACKed");
 					this.sequence = (this.sequence + 1) % 2; // update the sequence number
-				}else{
-					this.logger.debug("Acknowledgement for wrong package");
+				} else {
+					this.logger.debug("ACK received for wrong packet, resending packet");
 					this.sendPacket();
 				}
-
 			}
 		} catch(SocketTimeoutException e) {
-			this.logger.debug("Timeout occurred so resending packet");
+			this.logger.debug("Timeout occurred, resending packet");
 			this.sendPacket();
 		}
-
 	}
+
 	public void sendFile() throws IOException {
 		byte[] data = new byte[128];
 		int bytesRead;
-		while ((bytesRead = this.fp.read(data, 2, 126)) > 0){
-
+		while ((bytesRead = this.fp.read(data, 2, 126)) > 0) {
 			data[0] = (byte) this.sequence; // set the sequence number
-			data[1] = (byte) bytesRead; //send number of bytes read
-			this.out_packet.setData(data); //set date of the packet
+			data[1] = (byte) bytesRead; // send number of bytes read
+			this.out_packet.setData(data); // set data of the packet
 			this.sendPacket();
 		}
 		// signal the file is done
 		data[0] = (byte) this.sequence; // set the sequence number
-		data[1] = (byte) 127; //send number of bytes read
+		data[1] = (byte) 127; // send number of bytes read
 		this.out_packet.setData(data);
 		this.sendPacket();
 		this.logger.debug("Done sending file");
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		try {
 			if (args.length < 4) {
 				throw new Exception("Missing an argument: hostAddress receiverPort senderPort fileName");
@@ -133,8 +132,8 @@ public class StopAndWaitSender {
 			int receiverPort = new Integer(args[1]).intValue();
 			int senderPort = new Integer(args[2]).intValue();
 			String fileName = args[3];
-			Logger log = null;
-			if (args.length > 4){
+			Logger log;
+			if (args.length > 4) {
 				int level = new Integer(args[4]).intValue();
 				log = new Logger(level);
 			} else {
@@ -142,17 +141,14 @@ public class StopAndWaitSender {
 			}
 			log.debug(fileName);
 			StopAndWaitSender sw = new StopAndWaitSender(hostAddress,
-															senderPort,
-															receiverPort,
-															fileName,
-															log);
+														senderPort,
+														receiverPort,
+														fileName,
+														log);
 			sw.sendFile();
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-
 	}
-
-
 }
