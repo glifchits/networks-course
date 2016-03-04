@@ -51,12 +51,11 @@ public class GoBackNReceiver {
 	private DatagramPacket in_packet;
 	private InetAddress ia;
 	private int sequence;
-	private boolean binaryFile;
 
 	private int DATA_BUF = 124;
 	private int END_BYTES = DATA_BUF+1;
 	private int PACKET_SIZE = DATA_BUF+2;
-	
+
 	/**
 	* The public constructor
 	* @param hostAddress: a String of the host address
@@ -84,11 +83,9 @@ public class GoBackNReceiver {
 		out_data[0] = (byte) 1;
 		this.in_packet = new DatagramPacket(in_data, in_data.length, ia, senderPort);
 		this.out_packet = new DatagramPacket(out_data, out_data.length,ia, senderPort);
-		this.fw = new FileWriter(new File(fileName));
 		this.fs = new FileOutputStream(new File(fileName));
 		this.logger.debug("Created receiver");
 		this.sequence = 0;
-		this.binaryFile = true;
 	}
 
 	/**
@@ -142,11 +139,7 @@ public class GoBackNReceiver {
 	* @throws IOException: this occurs when unable to write to the file
 	*/
 	private void writeFile(byte[] data) throws IOException {
-		if (this.binaryFile) {
-			this.fs.write(data, 2, data[1]);
-		} else {
-			this.fw.write(new String(data,"UTF-8"), 2, data[1]);
-		}
+		this.fs.write(data, 2, data[1]);
 		this.acknowledge();
 	}
 
@@ -156,11 +149,7 @@ public class GoBackNReceiver {
 	* @throws IOException: this occurs when unable to close the file
 	*/
 	private void saveFile() throws IOException {
-		if (this.binaryFile) {
-			this.fs.close();
-		} else {
-			this.fw.close();
-		}
+		this.fs.close();
 		this.acknowledge();
 		this.logger.debug("Finished closing file");
 	}
