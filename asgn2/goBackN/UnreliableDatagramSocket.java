@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Random;
+
 /**
  * A class that extends DatagramSocket to include reliability number
  * @author Dallas Fraser - 110242560
@@ -13,60 +15,56 @@ import java.net.SocketException;
  * @version 1.0
  * @see Class#DatagramSocket
  */
-public class DGSocket extends DatagramSocket {
+public class UnreliableDatagramSocket extends DatagramSocket {
 	private int reliability;
 	private Logger logger;
-	private int count;
+	private Random rand;
+
 	/**
-	 *  the public constructor
+	 * public constructor with no parameters specified
 	 */
-	public DGSocket()throws SocketException {
-		// TODO Auto-generated constructor stub
-		super(5555);
-		this.reliability = 0;
-		this.logger = new Logger();
-		this.count = 0;
+	public UnreliableDatagramSocket() throws SocketException {
+		this(5555, 0, new Logger());
 	}
+
 	/**
 	* a public constructors where port and logger are specified
 	* @param port: the port number
 	* @param logger: the logger to use
 	*/
-	public DGSocket(int port, Logger logger)throws SocketException{
-		super(port);
-		this.reliability = 0;
-		this.logger = logger;
-		this.count = 0;
+	public UnreliableDatagramSocket(int port, Logger logger) throws SocketException {
+		this(port, 0, logger);
 	}
-	
+
 	/**
 	* a public construcotr where port, reliability, logger are specified
 	* @param port: the port number
 	* @param reliability: the reliability number
 	* @param logger: the logger to use
 	*/
-	public DGSocket(int port, int reliability, Logger logger) throws SocketException{
+	public UnreliableDatagramSocket(int port, int reliability, Logger logger) throws SocketException {
 		super(port);
 		this.reliability = reliability;
 		this.logger = logger;
-		this.count = 0;
+		this.rand = new Random();
 	}
-	
+
 	/**
 	* receive a datagram packet
 	* the pack will be dropped depending on the reliability number
 	* @param p: the datagram packet to be used
 	*/
-	public void receive(DatagramPacket p)throws IOException{
-		this.logger.debug("Receiving datagram packet");
-		if  ((this.reliability == 0 ) || (this.count % this.reliability) != 0){
-			super.receive(p);
+	public void receive(DatagramPacket pkt) throws IOException {
+		this.logger.debug("Called `receive()` on datagram socket");
+		if (this.reliability == 0) {
+			super.receive(pkt);
 			this.logger.debug("Packet was received");
-		}else{
+		} else if (this.reliability == 1 || rand.nextInt(this.reliability) == 0) {
 			this.logger.debug("Packet was dropped");
+		} else {
+			super.receive(pkt);
+			this.logger.debug("Packet was received");
 		}
-		this.count += 1;
-		this.logger.debug("Packet count" + this.count);
 		return;
 	}
 

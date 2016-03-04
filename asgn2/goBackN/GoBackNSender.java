@@ -22,21 +22,21 @@ import java.net.UnknownHostException;
  * The first byte is the sequence number, the second byte is the number of bytes being sent
  * the remaining 126 bytes are the data being sent
  * The sender will wait a reasonable amount of time before re-sending the
- * window of packets 
+ * window of packets
  * It follows the standard GBN from Computer Networking: A Top-Down Approach .
  * All files are sent as bytes.
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
  * @version 1.0
- * @see Class#DGSocket
+ * @see Class#UnreliableDatagramSocket
  * @see Class#PackageWindow
  */
 public class GoBackNSender {
 	/**
-	* 
-	* {@link socket}: the UPD socket 
-	* @see Class#DGSocket
-	* {@link logger}: the logger for the class 
+	*
+	* {@link socket}: the UPD socket
+	* @see Class#UnreliableDatagramSocket
+	* {@link logger}: the logger for the class
 	* @see Class#Logger
 	* {@link fp}: the file input stream  for reading files
 	* {@link temp_packet}: the datagram packet for responding
@@ -49,7 +49,7 @@ public class GoBackNSender {
 	* {@link doneReading}: the flag of whether done reading from the file
 	* {@link packetNumber}: the packet number of last read packet
 	*/
-	private DGSocket socket;
+	private UnreliableDatagramSocket socket;
 	private Logger logger;
 	private DatagramPacket in_packet;
 	private PackageWindow pw;
@@ -81,7 +81,7 @@ public class GoBackNSender {
 							String fileName,
 							int windowSize,
 							Logger logger) throws UnknownHostException, SocketException, FileNotFoundException {
-		this.socket = new DGSocket(senderPort, logger);
+		this.socket = new UnreliableDatagramSocket(senderPort, logger);
 		this.logger = logger;
 		this.ia = InetAddress.getByName(hostAddress);
 		byte[] data = new byte[128];

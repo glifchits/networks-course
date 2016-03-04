@@ -24,15 +24,15 @@ import java.net.UnknownHostException;
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
  * @version 1.0
- * @see Class#DGSocket
+ * @see Class#`UnreliableDatagramSocket`
  */
 
 public class GoBackNReceiver {
 	/**
-	* 
-	* {@link socket}: the UPD socket 
-	* @see Class#DGSocket
-	* {@link logger}: the logger for the class 
+	*
+	* {@link socket}: the UPD socket
+	* @see Class#UnreliableDatagramSocket
+	* {@link logger}: the logger for the class
 	* @see Class#Logger
 	* {@link fs}: the file output stream when transfering binary files
 	* {@link fw}: the file writer for text files
@@ -42,7 +42,7 @@ public class GoBackNReceiver {
 	* @see Class#
 	* {@link sequence}: the sequence number of package (0 or 1)
 	*/
-	private DGSocket socket;
+	private UnreliableDatagramSocket socket;
 	private Logger logger;
 	private PrintWriter out;
 	private FileOutputStream fs;
@@ -57,7 +57,7 @@ public class GoBackNReceiver {
 	* @param hostAddress: a String of the host address
 	* @param senderPort: the port number of the sender
 	* @param receiverPort: the port number of this receiver
-	* @param reliabilityNumber: the reliability number of the server @see Class#DGSocket
+	* @param reliabilityNumber: the reliability number of the server @see Class#UnreliableDatagramSocket
 	* @param fileName: the name of the file to output
 	* @param logger: the logger of the class
 	*
@@ -71,7 +71,7 @@ public class GoBackNReceiver {
 							int reliabilityNumber,
 							String fileName,
 							Logger logger) throws IOException {
-		this.socket = new DGSocket(receiverPort, reliabilityNumber, logger);
+		this.socket = new UnreliableDatagramSocket(receiverPort, reliabilityNumber, logger);
 		this.logger = logger;
 		InetAddress ia = InetAddress.getByName(hostAddress);
 		byte[] in_data = new byte[128];
