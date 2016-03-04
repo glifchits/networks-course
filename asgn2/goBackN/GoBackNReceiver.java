@@ -186,14 +186,17 @@ public class GoBackNReceiver {
 			int receiverPort = new Integer(args[2]).intValue();
 			int reliabilityNumber = new Integer(args[3]).intValue();
 			String fileName = args[4];
-			Logger logger = new Logger(0);
+			int loggerLevel = 2;
+			if (args.length > 5) {
+				loggerLevel = new Integer(args[5]).intValue();
+			}
+			Logger logger = new Logger(loggerLevel);
 			GoBackNReceiver gb = new GoBackNReceiver(hostAddress,
 														senderPort,
 														receiverPort,
 														reliabilityNumber,
 														fileName,
 														logger);
-			logger.debug("Created");
 			gb.receiveFile();
 		} catch(Exception e) {
 			e.printStackTrace();
