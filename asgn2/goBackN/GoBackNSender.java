@@ -18,7 +18,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
- * The Go back N sender. Each packet has a size of 128 bytes.
+ * The Go back N sender. Each packet has a size of 126 bytes.
  * The first byte is the sequence number, the second byte is the number of bytes being sent
  * the remaining 124 bytes are the data being sent
  * The sender will wait a reasonable amount of time before re-sending the
@@ -60,7 +60,7 @@ public class GoBackNSender {
 	private int packetNumber;
 	private boolean doneReading;
 	private int receiverPort;
-	
+
 	private int WAITTIME = 10000; // wait time in milliseconds
 	private int DATA_BUF = 124; // size of packet data portion
 	private int END_BYTES = DATA_BUF+1;
@@ -129,7 +129,7 @@ public class GoBackNSender {
 	public void receivePacket() throws IOException {
 		// check time to see if need to resend packet
 		long endTime = System.nanoTime();
-		long duration = (int) ((endTime - this.lastSent) / 1000000);
+		long duration = (int) ((endTime - this.lastSent) / 1000000); // convert to ms
 		if (duration > WAITTIME) {
 			this.logger.debug("Resending window since time has expired");
 			this.pw.transmitWindow(this.socket);

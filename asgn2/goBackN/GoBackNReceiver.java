@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
 public class GoBackNReceiver {
 	/**
 	*
-	* {@link socket}: the UPD socket
+	* {@link socket}: the UDP socket
 	* @see Class#UnreliableDatagramSocket
 	* {@link logger}: the logger for the class
 	* @see Class#Logger
@@ -39,7 +39,6 @@ public class GoBackNReceiver {
 	* {@link out_packet}: the datagram packet for responding
 	* {@link in_packet}: the datagram packet for receiving
 	* {@link ia}: the internet address of the sender
-	* @see Class#
 	* {@link sequence}: the sequence number of packet (0 or 1)
 	*/
 	private UnreliableDatagramSocket socket;

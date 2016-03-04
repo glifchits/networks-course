@@ -9,8 +9,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
- * A package widow. It helps dealing with all the packages.
- * It used an underlying linked list of packages and their sequence numbers
+ * A packet window, used as the sender window for the Go-Back-N implementation.
+ * It is an linked list of packets and their sequence numbers
  *
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
@@ -26,14 +26,13 @@ public class PacketWindow {
 	* @see Class#Logger
 	* {@link nodes}: the count of the number of nodes
 	* {@link windowSize}: the maximum window size
-	 */
+	*/
 	private Node front;
 	private int nodes;
 	private Logger logger;
 	private int windowSize;
 
 	/**
-	 * the default constructor
 	 * @param windowSize: the size of the window (# of packets)
 	 */
 	public PacketWindow(int windowSize) {
@@ -53,8 +52,7 @@ public class PacketWindow {
 	}
 
 	/**
-	 * A method to check if the window is full or not
-	 * @return full: true if window is full, false otherwise
+	 * @return true if window is full, false otherwise
 	 */
 	public boolean windowFull() {
 		return this.nodes == this.windowSize;
@@ -81,6 +79,7 @@ public class PacketWindow {
 		} else {
 			previous.next = new Node(sequence, dp);
 		}
+		this.logger.debug("A packet was added to the packet window");
 		this.nodes += 1;
 	}
 
@@ -90,6 +89,7 @@ public class PacketWindow {
 	 * @throws IOException
 	 */
 	public void transmitWindow(UnreliableDatagramSocket socket) throws IOException {
+		this.logger.debug("Sending entire packet window");
 		Node current = this.front;
 		while (current != null) {
 			this.logger.debug("Sending packet: " + current.sequence);
@@ -118,19 +118,15 @@ public class PacketWindow {
 			moved = true;
 			this.nodes -= count;
 		}
+		this.logger.debug("Packet window was incremented");
 		return moved;
 	}
 
 	/**
-	 * tells whether all of the packets in the window have be sent and acknowledged
-	 * @return done: true all done, false otherwise
+	 * @return true if all packets were sent and acknowledged, false otherwise
 	 */
 	public boolean doneYet() {
-		boolean done = false;
-		if (this.front == null) {
-			done = true;
-		}
-		return done;
+		return (this.front == null);
 	}
 	/**
 	 * the node use for the linked list
