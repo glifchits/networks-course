@@ -15,14 +15,14 @@ import java.net.UnknownHostException;
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
  * @version 1.0
- * @see Class#DGSocket
+ * @see Class#UnreliableDatagramSocket
  * @see Class#Logger
  */
 public class PackageWindow {
 	/**
 	* {@link front}: the front or first package of the window
 	* @see Class#Node
-	* {@link logger}: the logger for the class 
+	* {@link logger}: the logger for the class
 	* @see Class#Logger
 	* {@link nodes}: the count of the number of nodes
 	* {@link windowSize}: the maximum window size
@@ -71,7 +71,7 @@ public class PackageWindow {
 	 * add a package to the window
 	 * @param sequence: the sequence number of the package
 	 * @param dp: the datagram packet
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void appendPackage(int sequence, DatagramPacket dp)
 				throws Exception{
@@ -97,7 +97,7 @@ public class PackageWindow {
 	 * @param socket: the socket use to send the packages over
 	 * @throws IOException
 	 */
-	public void transmitWindow(DGSocket socket) throws IOException{
+	public void transmitWindow(UnreliableDatagramSocket socket) throws IOException{
 		Node current = this.front;
 		while (current != null){
 			this.logger.debug("Sending package: " + current.sequence);
@@ -120,7 +120,7 @@ public class PackageWindow {
 			position = current.sequence;
 			current = current.next;
 			count += 1;
-			
+
 		}
 		if(position == acknowledged){
 			// no change otherwise
@@ -152,7 +152,7 @@ public class PackageWindow {
 	private class Node{
 		public int sequence;
 		public DatagramPacket dp;
-		public Node next; 
+		public Node next;
 		Node(int sequence, DatagramPacket dp){
 			this.sequence = sequence;
 			this.dp = dp;
@@ -172,7 +172,7 @@ public class PackageWindow {
 			loggingLevel = 0;
 		}
 		Logger logger = new Logger(loggingLevel);
-		DGSocket dg = new DGSocket(5555, logger);
+		UnreliableDatagramSocket dg = new UnreliableDatagramSocket(5555, logger);
 		PackageWindow pw = new PackageWindow(2, logger);
 		// test full
 		boolean full = pw.windowFull();
@@ -214,7 +214,7 @@ public class PackageWindow {
 		if(moved == true){
 			logger.error("Window was moved when it should not have been");
 		}
-		
+
 		full = pw.windowFull();
 		done = pw.doneYet();
 		if (full == true){
@@ -222,6 +222,6 @@ public class PackageWindow {
 		}
 		if (done != true){
 			logger.error("All packages were transmitted");
-		}		
+		}
 	}
 }
