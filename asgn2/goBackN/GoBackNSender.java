@@ -60,12 +60,13 @@ public class GoBackNSender {
 	private int packetNumber;
 	private boolean doneReading;
 	private int receiverPort;
+	
 	private int WAITTIME = 10000; // wait time in milliseconds
 	private int DATA_BUF = 124; // size of packet data portion
 	private int END_BYTES = DATA_BUF+1;
 	private int PACKET_SIZE = DATA_BUF+2;
+
 	/**
-	 * the deagilt constructor
 	 * the public constructor
 	 * @param hostAddress: a String of the host address
 	 * @param senderPort: the port number of the sender
@@ -161,7 +162,7 @@ public class GoBackNSender {
 		// signal the file is done
 		byte[] data = new byte[PACKET_SIZE];
 		data[0] = (byte) this.sequence; // set the sequence number
-		data[1] = (byte) END_BYTES; //send number of bytes read
+		data[1] = (byte) END_BYTES; // send number of bytes read
 		DatagramPacket dp = new DatagramPacket(data, data.length, this.ia, receiverPort);
 		this.logger.debug("Signaling the file is done transferring");
 		try {
@@ -194,7 +195,7 @@ public class GoBackNSender {
 		DatagramPacket dp;
 		while (!done) {
 			while (!this.pw.windowFull() && (dp = this.readyPacket()) != null) {
-				this.pw.appendPackage(this.packetNumber, dp); // add the packet to the window
+				this.pw.appendPacket(this.packetNumber, dp); // add the packet to the window
 				this.logger.debug("Adding packet: " + this.packetNumber);
 				this.packetNumber = (this.packetNumber + 1) % 128;
 			}

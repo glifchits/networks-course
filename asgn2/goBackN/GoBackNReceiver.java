@@ -54,7 +54,9 @@ public class GoBackNReceiver {
 	private boolean binaryFile;
 
 	private int DATA_BUF = 124;
+	private int END_BYTES = DATA_BUF+1;
 	private int PACKET_SIZE = DATA_BUF+2;
+	
 	/**
 	* The public constructor
 	* @param hostAddress: a String of the host address
@@ -99,21 +101,20 @@ public class GoBackNReceiver {
 		try {
 			this.socket.receive(this.in_packet);
 			byte[] data = this.in_packet.getData();
-			this.logger.debug(data);
-			this.logger.debug(this.sequence + " vs " + data[0]);
+			this.logger.debug("Expected seq # " + this.sequence + ". Got " + data[0]);
 			if (data[0] == this.sequence && data[1] != 0) {
 				this.logger.debug("Packet was right sequence");
-				if(data[1] == DATA_BUF+1){
+				if (data[1] == END_BYTES) {
 					// we are done
 					this.logger.debug("Finish the file");
 					this.saveFile();
 				} else {
-					// packet was recieved and should write to the file
+					// packet was received and we should write its data to the file
 					result = 0;
 					this.writeFile(data);
 				}
-			} else {
-				// just drop the packet
+			} else { // the packet was not the expected sequence number
+				// just drop the packet, do not buffer it
 				result = 0;
 				this.logger.debug("Packet was invalid sequence");
 			}

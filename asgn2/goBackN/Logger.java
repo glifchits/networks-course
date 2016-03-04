@@ -30,7 +30,7 @@ public class Logger {
 	public Logger(int mode) {
 		this.mode = mode;
 	}
-	
+
 	/**
 	 * a method to log the information if in DEBUG mode
 	 * @param message the message to log (String)
@@ -40,7 +40,7 @@ public class Logger {
 			System.out.println("DEBUG - " + message);
 		}
 	}
-	
+
 	/**
 	 * a method to log the information only if not PRODUCTION
 	 * @param message the message to log (String)
@@ -50,7 +50,7 @@ public class Logger {
 			System.out.println("INFO - " + message);
 		}
 	}
-	
+
 	/**
 	 * a method to log the error
 	 * @param message the error to log (String)
@@ -114,7 +114,7 @@ public class Logger {
 	/**
 	 * a method to log the byte array if in debug mode
 	 * @param a: the byte array
-	 */	
+	 */
 	public void debug(byte[] a){
 		if (this.mode == DEBUG ){
 			System.out.println(Arrays.toString(a));
@@ -127,7 +127,7 @@ public class Logger {
 	*/
 	public void info(byte[] a){
 		if(this.mode != PRODUCTION){
-			System.out.println(Arrays.toString(a));			
+			System.out.println(Arrays.toString(a));
 		}
 	}
 
@@ -138,6 +138,6 @@ public class Logger {
 	public void error(byte[] a){
 		System.out.println(Arrays.toString(a));
 	}
-	
+
 
 }

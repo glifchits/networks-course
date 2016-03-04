@@ -31,16 +31,13 @@ public class PacketWindow {
 	private int nodes;
 	private Logger logger;
 	private int windowSize;
+
 	/**
 	 * the default constructor
 	 * @param windowSize: the size of the window (# of packets)
 	 */
 	public PacketWindow(int windowSize) {
-		// TODO Auto-generated constructor stub
-		this.front = null;
-		this.nodes = 0;
-		this.logger = new Logger(2);
-		this.windowSize = windowSize;
+		this(windowSize, new Logger(2));
 	}
 
 	/**
@@ -48,7 +45,7 @@ public class PacketWindow {
 	 * @param windowSize: the size of the window (# of packets)
 	 * @param logger: the logger to use
 	 */
-	public PacketWindow(int windowSize, Logger logger){
+	public PacketWindow(int windowSize, Logger logger) {
 		this.front = null;
 		this.nodes = 0;
 		this.logger = logger;
@@ -59,50 +56,44 @@ public class PacketWindow {
 	 * A method to check if the window is full or not
 	 * @return full: true if window is full, false otherwise
 	 */
-	public boolean windowFull(){
-		boolean full = false;
-		if (this.nodes == this.windowSize){
-			full = true;
-		}
-		return full;
+	public boolean windowFull() {
+		return this.nodes == this.windowSize;
 	}
 
 	/**
-	 * add a package to the window
-	 * @param sequence: the sequence number of the package
+	 * add a packet to the window
+	 * @param sequence: the sequence number of the packet
 	 * @param dp: the datagram packet
 	 * @throws Exception
 	 */
-	public void appendPackage(int sequence, DatagramPacket dp)
-				throws Exception{
+	public void appendPacket(int sequence, DatagramPacket dp) throws Exception {
 		Node previous = null;
 		Node current = this.front;
-		if (this.nodes + 1 > this.windowSize){
+		if (this.nodes + 1 > this.windowSize) {
 			throw new Exception("Window size was exceeded");
 		}
-		while (current !=  null){
+		while (current != null) {
 			previous = current;
 			current = current.next;
 		}
-		if (previous == null){
+		if (previous == null) {
 			this.front = new Node(sequence, dp);
-		}else{
+		} else {
 			previous.next = new Node(sequence, dp);
 		}
 		this.nodes += 1;
 	}
 
 	/**
-	 * transmit all the packages in the window
-	 * @param socket: the socket use to send the packages over
+	 * transmit all the packets in the window
+	 * @param socket: the socket use to send the packets over
 	 * @throws IOException
 	 */
-	public void transmitWindow(UnreliableDatagramSocket socket) throws IOException{
+	public void transmitWindow(UnreliableDatagramSocket socket) throws IOException {
 		Node current = this.front;
-		while (current != null){
-			this.logger.debug("Sending package: " + current.sequence);
+		while (current != null) {
+			this.logger.debug("Sending packet: " + current.sequence);
 			socket.send(current.dp);
-			this.logger.debug(current.dp.getData());
 			current = current.next;
 		}
 	}
@@ -111,22 +102,21 @@ public class PacketWindow {
 	 * move the package window forward
 	 * @param acknowledged: the most recent acknowledged packet
 	 */
-	public boolean movePacketWindow(int acknowledged){
+	public boolean movePacketWindow(int acknowledged) {
 		boolean moved = false;
 		Node current = this.front;
 		int position = -1;
 		int count = 0;
-		while (current != null && position != acknowledged){
+		while (current != null && position != acknowledged) {
 			position = current.sequence;
 			current = current.next;
 			count += 1;
-
 		}
-		if(position == acknowledged){
+		if (position == acknowledged) {
 			// no change otherwise
 			this.front = current;
 			moved = true;
-			this.nodes -=  count;
+			this.nodes -= count;
 		}
 		return moved;
 	}
@@ -135,9 +125,9 @@ public class PacketWindow {
 	 * tells whether all of the packets in the window have be sent and acknowledged
 	 * @return done: true all done, false otherwise
 	 */
-	public boolean doneYet(){
+	public boolean doneYet() {
 		boolean done = false;
-		if (this.front == null){
+		if (this.front == null) {
 			done = true;
 		}
 		return done;
@@ -149,11 +139,11 @@ public class PacketWindow {
 	 * @version 1.0
 	 *
 	 */
-	private class Node{
+	private class Node {
 		public int sequence;
 		public DatagramPacket dp;
 		public Node next;
-		Node(int sequence, DatagramPacket dp){
+		Node(int sequence, DatagramPacket dp) {
 			this.sequence = sequence;
 			this.dp = dp;
 		}
@@ -183,7 +173,7 @@ public class PacketWindow {
 		if (done != true){
 			logger.error("Window should be empty so should be done");
 		}
-		// append some packages
+		// append some packets
 		InetAddress ia = InetAddress.getLocalHost();
 		byte[] out_data = new byte[1];
 		DatagramPacket dp = new DatagramPacket(out_data,
@@ -193,7 +183,7 @@ public class PacketWindow {
 		try{
 			int i = 0;
 			while(! pw.windowFull()){
-				pw.appendPackage(i, dp);
+				pw.appendPacket(i, dp);
 				i++;
 			}
 		}catch (Exception e){
