@@ -60,11 +60,15 @@ public class GoBackNSender {
 	private int packetNumber;
 	private boolean doneReading;
 	private int receiverPort;
+	private int totalBytesRead;
 
-	private int WAITTIME = 10000; // wait time in milliseconds
+	private int WAITTIME = 3*1000; // wait time in milliseconds
 	private int DATA_BUF = 124; // size of packet data portion
 	private int END_BYTES = DATA_BUF+1;
 	private int PACKET_SIZE = DATA_BUF+2;
+
+	private float NS_TO_MS = 1000*1000;
+	private float NS_TO_S = 1000*1000*1000;
 
 	/**
 	 * the public constructor
@@ -99,6 +103,7 @@ public class GoBackNSender {
 		this.pw = new PacketWindow(windowSize, logger);
 		this.packetNumber = 0;
 		this.doneReading = false;
+		this.totalBytesRead = 0;
 	}
 
 	/**
@@ -114,6 +119,7 @@ public class GoBackNSender {
 		if (!doneReading && (bytesRead = this.fp.read(data, 2, DATA_BUF)) > 0) {
 			data[0] = (byte) this.packetNumber; // set the packet number
 			data[1] = (byte) bytesRead; //send number of bytes read
+			this.totalBytesRead += bytesRead; // update for output info
 			dp = new DatagramPacket(data, data.length, this.ia, receiverPort);
 			ready = true;
 		} else {
@@ -129,7 +135,7 @@ public class GoBackNSender {
 	public void receivePacket() throws IOException {
 		// check time to see if need to resend packet
 		long endTime = System.nanoTime();
-		long duration = (int) ((endTime - this.lastSent) / 1000000); // convert to ms
+		long duration = (int) ((endTime - this.lastSent) / NS_TO_MS);
 		if (duration > WAITTIME) {
 			this.logger.debug("Resending window since time has expired");
 			this.pw.transmitWindow(this.socket);
@@ -191,6 +197,8 @@ public class GoBackNSender {
 	 * send the file to the recipient
 	 */
 	public void sendFile() throws Exception {
+		this.logger.info("Sender: sending file");
+		long senderStartTime = System.nanoTime();
 		boolean done = false;
 		DatagramPacket dp;
 		while (!done) {
@@ -209,6 +217,11 @@ public class GoBackNSender {
 			}
 		}
 		this.signalFinished(); // signal done sending file
+		long senderEndTime = System.nanoTime();
+		double seconds = (senderEndTime - senderStartTime) / NS_TO_S;
+		this.logger.info("Sender: file sending complete");
+		this.logger.info(String.format("Total time to send file: %.3f seconds", seconds));
+		this.logger.info("Total file size: "+ this.totalBytesRead +" bytes");
 	}
 
 	/**
