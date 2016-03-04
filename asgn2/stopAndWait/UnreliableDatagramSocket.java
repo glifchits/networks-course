@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Random;
 
 /**
  * A class that extends DatagramSocket to include reliability number
@@ -17,16 +18,13 @@ import java.net.SocketException;
 public class UnreliableDatagramSocket extends DatagramSocket {
 	private int reliability;
 	private Logger logger;
-	private int count;
+	private Random rand;
 
 	/**
-	 *  the public constructor
+	 * public constructor with no parameters specified
 	 */
 	public UnreliableDatagramSocket() throws SocketException {
-		super(5555);
-		this.reliability = 0;
-		this.logger = new Logger();
-		this.count = 0;
+		this(5555, 0, new Logger());
 	}
 
 	/**
@@ -35,10 +33,7 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	* @param logger: the logger to use
 	*/
 	public UnreliableDatagramSocket(int port, Logger logger) throws SocketException {
-		super(port);
-		this.reliability = 0;
-		this.logger = logger;
-		this.count = 0;
+		this(port, 0, logger);
 	}
 
 	/**
@@ -51,7 +46,7 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 		super(port);
 		this.reliability = reliability;
 		this.logger = logger;
-		this.count = 0;
+		this.rand = new Random();
 	}
 
 	/**
@@ -59,16 +54,14 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	* the pack will be dropped depending on the reliability number
 	* @param p: the datagram packet to be used
 	*/
-	public void receive(DatagramPacket p) throws IOException {
+	public void receive(DatagramPacket pkt) throws IOException {
 		this.logger.debug("Receiving datagram packet");
-		if ((this.reliability == 0) || (this.count % this.reliability) != 0) {
-			super.receive(p);
+		if (this.reliability == 0) {
 			this.logger.debug("Packet was received");
-		} else {
+			super.receive(pkt);
+		} else if (rand.nextInt(this.reliability-1) == 0) {
 			this.logger.debug("Packet was dropped");
 		}
-		this.count += 1;
-		this.logger.debug("Packet count" + this.count);
 		return;
 	}
 
