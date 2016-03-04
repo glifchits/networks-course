@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
  * @see Class#UnreliableDatagramSocket
  * @see Class#Logger
  */
-public class PackageWindow {
+public class PacketWindow {
 	/**
 	* {@link front}: the front or first package of the window
 	* @see Class#Node
@@ -35,7 +35,7 @@ public class PackageWindow {
 	 * the default constructor
 	 * @param windowSize: the size of the window (# of packets)
 	 */
-	public PackageWindow(int windowSize) {
+	public PacketWindow(int windowSize) {
 		// TODO Auto-generated constructor stub
 		this.front = null;
 		this.nodes = 0;
@@ -48,7 +48,7 @@ public class PackageWindow {
 	 * @param windowSize: the size of the window (# of packets)
 	 * @param logger: the logger to use
 	 */
-	public PackageWindow(int windowSize, Logger logger){
+	public PacketWindow(int windowSize, Logger logger){
 		this.front = null;
 		this.nodes = 0;
 		this.logger = logger;
@@ -111,7 +111,7 @@ public class PackageWindow {
 	 * move the package window forward
 	 * @param acknowledged: the most recent acknowledged packet
 	 */
-	public boolean movePackageWindow(int acknowledged){
+	public boolean movePacketWindow(int acknowledged){
 		boolean moved = false;
 		Node current = this.front;
 		int position = -1;
@@ -173,7 +173,7 @@ public class PackageWindow {
 		}
 		Logger logger = new Logger(loggingLevel);
 		UnreliableDatagramSocket dg = new UnreliableDatagramSocket(5555, logger);
-		PackageWindow pw = new PackageWindow(2, logger);
+		PacketWindow pw = new PacketWindow(2, logger);
 		// test full
 		boolean full = pw.windowFull();
 		boolean done = pw.doneYet();
@@ -206,11 +206,11 @@ public class PackageWindow {
 			logger.error("IO exception by transmit window");
 		}
 		// update window position
-		boolean moved = pw.movePackageWindow(1);
+		boolean moved = pw.movePacketWindow(1);
 		if(moved != true){
 			logger.error("Window was not moved");
 		}
-		moved = pw.movePackageWindow(3);
+		moved = pw.movePacketWindow(3);
 		if(moved == true){
 			logger.error("Window was moved when it should not have been");
 		}

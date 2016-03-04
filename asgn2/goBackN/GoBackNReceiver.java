@@ -40,7 +40,7 @@ public class GoBackNReceiver {
 	* {@link in_packet}: the datagram packet for receiving
 	* {@link ia}: the internet address of the sender
 	* @see Class#
-	* {@link sequence}: the sequence number of package (0 or 1)
+	* {@link sequence}: the sequence number of packet (0 or 1)
 	*/
 	private UnreliableDatagramSocket socket;
 	private Logger logger;

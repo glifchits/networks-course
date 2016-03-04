@@ -29,7 +29,7 @@ import java.net.UnknownHostException;
  * @author George Lifchits - 100691350
  * @version 1.0
  * @see Class#UnreliableDatagramSocket
- * @see Class#PackageWindow
+ * @see Class#PacketWindow
  */
 public class GoBackNSender {
 	/**
@@ -44,15 +44,15 @@ public class GoBackNSender {
 	* {@link ia}: the internet address of the sender
 	* {@link sequence}: the sequence number of package (0-127)
 	* {@link lastSent}: the time the last transmission was sent (long)
-	* {@link pw}: the package window
-	* @see Class#PackageWindow
+	* {@link pw}: the packet window
+	* @see Class#PacketWindow
 	* {@link doneReading}: the flag of whether done reading from the file
 	* {@link packetNumber}: the packet number of last read packet
 	*/
 	private UnreliableDatagramSocket socket;
 	private Logger logger;
 	private DatagramPacket in_packet;
-	private PackageWindow pw;
+	private PacketWindow pw;
 	private FileInputStream fp;
 	private InetAddress ia;
 	private int sequence;
@@ -95,7 +95,7 @@ public class GoBackNSender {
 		this.fp = new FileInputStream(new File(fileName));
 		this.logger.debug("Created sender");
 		this.sequence = 0;
-		this.pw = new PackageWindow(windowSize, logger);
+		this.pw = new PacketWindow(windowSize, logger);
 		this.packetNumber = 0;
 		this.doneReading = false;
 	}
@@ -141,7 +141,7 @@ public class GoBackNSender {
 				this.receivePacket(); // may need to resend
 			} else {
 				this.sequence = (this.sequence + 1) % 128; // update the sequence number
-				boolean moved = this.pw.movePackageWindow(this.in_packet.getData()[0]);
+				boolean moved = this.pw.movePacketWindow(this.in_packet.getData()[0]);
 				if (!moved && !this.pw.doneYet()) {
 					this.receivePacket(); // not a valid ack or moved window
 				}
