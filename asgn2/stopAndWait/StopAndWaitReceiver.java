@@ -45,12 +45,10 @@ public class StopAndWaitReceiver {
 	private UnreliableDatagramSocket socket;
 	private Logger logger;
 	private FileOutputStream fs;
-	private FileWriter fw;
 	private DatagramPacket out_packet;
 	private DatagramPacket in_packet;
 	private InetAddress ia;
 	private int sequence;
-	private boolean binaryFile;
 
 	/**
 	* The public constructor
@@ -131,11 +129,7 @@ public class StopAndWaitReceiver {
 	* @throws IOException: this occurs when unable to write to the file
 	*/
 	private void writeFile(byte[] data) throws IOException {
-		if (this.binaryFile) {
-			this.fs.write(data, 2, data[1]);
-		} else {
-			this.fw.write(new String(data,"UTF-8"), 2, data[1]);
-		}
+		this.fs.write(data, 2, data[1]);
 		this.acknowledge();
 	}
 
@@ -145,11 +139,7 @@ public class StopAndWaitReceiver {
 	* @throws IOException: this occurs when unable to close the file
 	*/
 	private void saveFile() throws IOException {
-		if (this.binaryFile) {
-			this.fs.close();
-		} else {
-			this.fw.close();
-		}
+		this.fs.close();
 		this.acknowledge();
 		this.logger.debug("Finished closing file");
 	}
