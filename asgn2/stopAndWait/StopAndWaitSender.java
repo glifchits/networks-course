@@ -1,6 +1,6 @@
 /**
-* Imports
-*/
+ * Imports
+ */
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,11 +16,11 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 /**
- * The stop and wait sender. It sends of size of 128 bytes.
+ * The stop and wait sender. It sends of size of 126 bytes.
  * The first byte is the sequence number, the second byte is the number of bytes being sent
- * the remaining 126 bytes are the data being sent
+ * the remaining 124 bytes are the data being sent
  * The sender will wait a reasonable amount of time before re-sending the packet
- * It follows the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach .
+ * It follows the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach.
  * All files are sent as bytes.
  * @author Dallas Fraser - 110242560
  * @author George Lifchits - 100691350
@@ -37,7 +37,6 @@ public class StopAndWaitSender {
 	* {@link out_packet}: the datagram packet for responding
 	* {@link in_packet}: the datagram packet for receiving
 	* {@link ia}: the internet address of the sender
-	* @see Class#
 	* {@link sequence}: the sequence number of package (0 or 1)
 	*/
 	private UnreliableDatagramSocket socket;

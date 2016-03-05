@@ -1,7 +1,6 @@
 /**
-* Imports
-*/
-
+ * Imports
+ */
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +17,9 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
- * The stop and wait receiver. It has a buffer of 128 bytes.
+ * The stop and wait receiver. It has a buffer of 126 bytes.
  * It will acknowledge each packet by returning one byte with a value of sequence number.
- * It follows the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach .
+ * It follows the standard Reliable Data Transfer 3.0 from Computer Networking: A Top-Down Approach.
  * The receiver will acknowledge the packet sequence number processed.
  *
  * @author Dallas Fraser - 110242560
