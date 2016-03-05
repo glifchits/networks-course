@@ -1,22 +1,17 @@
 # CP372
-Compiling
------------
+
+# Compiling
+
+In any directory containing `.java` files, run
+
 ```java
 javac *.java
 ```
-Running Server
------------
+
+# Running
+
+After compiling, run any file with
+
 ```java
-java Runserver PortNumber LogLevel
-example
-java Runserver 5555 0
+java SomeClass [potential command-line arguments]
 ```
-Running Client
------------
-```java
-java ClientGui
-```
-
-
-
-
