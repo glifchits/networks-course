@@ -49,6 +49,14 @@ public class StopAndWaitReceiver {
 	private DatagramPacket in_packet;
 	private InetAddress ia;
 	private int sequence;
+	private long firstPacketReceivedTime;
+
+	private int SO_TIMEOUT = 5000;
+	private float NS_TO_S = 1000*1000*1000;
+
+	private int DATA_BUF = 124;
+	private int END_BYTES = DATA_BUF+1;
+	private int PACKET_SIZE = DATA_BUF+2;
 
 	/**
 	* The public constructor
@@ -75,17 +83,14 @@ public class StopAndWaitReceiver {
 		this.logger = logger;
 		this.ia = InetAddress.getByName(hostAddress);
 		byte[] data = new byte[1];
-		data[0] = (byte) 1;
-		byte[] in_data = new byte[128];
+		byte[] in_data = new byte[PACKET_SIZE];
 		this.out_packet = new DatagramPacket(data, data.length, this.ia, senderPort);
 		this.in_packet = new DatagramPacket(in_data, in_data.length, this.ia, senderPort);
-		this.socket.setSoTimeout(5000);
-		this.fw = new FileWriter(new File(fileName));
+		this.socket.setSoTimeout(SO_TIMEOUT);
 		this.fs = new FileOutputStream(new File(fileName));
 		this.logger.debug("Created receiver");
 		this.sequence = 0;
-
-		binaryFile = true;
+		this.firstPacketReceivedTime = 0;
 	}
 
 	/**
@@ -101,7 +106,11 @@ public class StopAndWaitReceiver {
 			this.logger.debug("Expected seq num " + this.sequence + ". Got " + data[0]);
 			if (data[0] == this.sequence && data[1] != 0) {
 				this.logger.debug("Packet was right sequence");
-				if (data[1] == 125) {
+				if (this.firstPacketReceivedTime == 0) {
+					this.firstPacketReceivedTime = System.nanoTime();
+					this.logger.debug("Received first packet");
+				}
+				if (data[1] == END_BYTES) {
 					// we are done
 					this.logger.debug("Finish the file");
 					this.saveFile();
@@ -163,9 +172,17 @@ public class StopAndWaitReceiver {
 	* @throws IOException: occurs in various submethods
 	*/
 	public void receiveFile() throws IOException {
+		this.logger.info("Receiver: receiving file");
+		long receiverStartTime = System.nanoTime();
 		while (this.receivePacket() >= 0) {
 			this.logger.debug("Receiving packet");
 		}
+		long receiverEndTime = System.nanoTime();
+		double seconds = (receiverEndTime - receiverStartTime) / NS_TO_S;
+		double secondsFromFirst = (receiverEndTime - this.firstPacketReceivedTime) / NS_TO_S;
+		this.logger.info("Receiver: receive file complete");
+		this.logger.info(String.format("Total time to receive file: %.3g seconds", seconds));
+		this.logger.info(String.format("Total time to receive file since first packet received: %.3g seconds", secondsFromFirst));
 	}
 
 	/**

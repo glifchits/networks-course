@@ -46,10 +46,15 @@ public class StopAndWaitSender {
 	private FileInputStream fp;
 	private InetAddress ia;
 	private int sequence;
+	private int totalBytesRead;
 
 	private int DATA_BUF = 124;
 	private int END_BYTES = DATA_BUF + 1; // 1 + maximum data buf size
 	private int PACKET_SIZE = DATA_BUF + 2; // 1 byte for seq# and 1 for packet size
+
+	private int SO_TIMEOUT = 10000;
+	private float NS_TO_MS = 1000*1000;
+	private float NS_TO_S = 1000*1000*1000;
 
 	/**
 	* the public constructor
@@ -77,7 +82,7 @@ public class StopAndWaitSender {
 		byte[] in_data = new byte[1];
 		this.out_packet = new DatagramPacket(data, data.length, this.ia, receiverPort);
 		this.in_packet = new DatagramPacket(in_data, in_data.length, this.ia, receiverPort);
-		this.socket.setSoTimeout(10000);
+		this.socket.setSoTimeout(SO_TIMEOUT);
 		this.fp = new FileInputStream(new File(fileName));
 		this.logger.debug("Created sender");
 		this.sequence = 0;
@@ -111,6 +116,9 @@ public class StopAndWaitSender {
 	}
 
 	public void sendFile() throws IOException {
+		this.logger.info("Sender: sending file");
+		long senderStartTime = System.nanoTime();
+
 		byte[] data = new byte[PACKET_SIZE];
 		int bytesRead;
 		while ((bytesRead = this.fp.read(data, 2, DATA_BUF)) > 0) {
@@ -118,13 +126,19 @@ public class StopAndWaitSender {
 			data[1] = (byte) bytesRead; // send number of bytes read
 			this.out_packet.setData(data); // set data of the packet
 			this.sendPacket();
+			this.totalBytesRead += bytesRead;
 		}
 		// signal the file is done
 		data[0] = (byte) this.sequence; // set the sequence number
 		data[1] = (byte) END_BYTES; // send number of bytes read
 		this.out_packet.setData(data);
 		this.sendPacket();
-		this.logger.debug("Done sending file");
+
+		long senderEndTime = System.nanoTime();
+		double seconds = (senderEndTime - senderStartTime) / NS_TO_S;
+		this.logger.info("Sender: file sending complete");
+		this.logger.info(String.format("Total time to send file: %.3f seconds", seconds));
+		this.logger.info("Total file size: "+ this.totalBytesRead +" bytes");
 	}
 
 	public static void main(String[] args) {
