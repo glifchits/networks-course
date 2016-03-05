@@ -72,7 +72,7 @@ public class StopAndWaitReceiver {
 								String fileName,
 								Logger logger) throws IOException,
 														UnknownHostException,
-														SocketException  {
+														SocketException {
 		this.socket = new UnreliableDatagramSocket(receiverPort, reliabilityNumber, logger);
 		this.logger = logger;
 		this.ia = InetAddress.getByName(hostAddress);
@@ -108,7 +108,7 @@ public class StopAndWaitReceiver {
 					this.logger.debug("Finish the file");
 					this.saveFile();
 				} else {
-					// packet was recieved and should write to the file
+					// packet was received and should write to the file
 					result = 0;
 					this.writeFile(data);
 				}

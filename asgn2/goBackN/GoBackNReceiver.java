@@ -136,7 +136,7 @@ public class GoBackNReceiver {
 		this.logger.info("Receiver: receiving file");
 		long receiverStartTime = System.nanoTime();
 		while (this.receivePacket() >= 0) {
-			this.logger.debug("receiving Packet");
+			this.logger.debug("Receiving packet");
 		}
 		long receiverEndTime = System.nanoTime();
 		double seconds = (receiverEndTime - receiverStartTime) / NS_TO_S;
