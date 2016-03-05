@@ -4,7 +4,7 @@
 
 In any directory containing `.java` files, run
 
-```java
+```bash
 javac *.java
 ```
 
@@ -12,6 +12,6 @@ javac *.java
 
 After compiling, run any file with
 
-```java
+```bash
 java SomeClass [potential command-line arguments]
 ```
