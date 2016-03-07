@@ -155,7 +155,7 @@ public class StopAndWaitSender {
 				int level = new Integer(args[4]).intValue();
 				log = new Logger(level);
 			} else {
-				log = new Logger(0);
+				log = new Logger(2);
 			}
 			log.debug(fileName);
 			StopAndWaitSender sw = new StopAndWaitSender(hostAddress,
@@ -165,7 +165,6 @@ public class StopAndWaitSender {
 														log);
 			sw.sendFile();
 		} catch(Exception e) {
-			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
 	}

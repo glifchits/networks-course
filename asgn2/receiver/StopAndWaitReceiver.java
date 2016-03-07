@@ -220,7 +220,6 @@ public class StopAndWaitReceiver {
 			log.debug("Created");
 			gb.receiveFile();
 		} catch(Exception e) {
-			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
 	}
