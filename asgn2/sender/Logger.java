@@ -19,7 +19,7 @@ public class Logger {
 	/**
 	 * the default constructor. Initializes the mode to INFO
 	 */
-	public Logger() {
+	public Logger(){
 		this.mode = INFO;
 	}
 
@@ -35,8 +35,8 @@ public class Logger {
 	 * a method to log the information if in DEBUG mode
 	 * @param message the message to log (String)
 	 */
-	public void debug(String message) {
-		if (this.mode == DEBUG) {
+	public void debug(String message){
+		if (this.mode == DEBUG){
 			System.out.println("DEBUG - " + message);
 		}
 	}
@@ -45,8 +45,8 @@ public class Logger {
 	 * a method to log the information only if not PRODUCTION
 	 * @param message the message to log (String)
 	 */
-	public void info(String message) {
-		if (this.mode != PRODUCTION) {
+	public void info(String message){
+		if (this.mode != PRODUCTION){
 			System.out.println("INFO - " + message);
 		}
 	}
@@ -55,7 +55,7 @@ public class Logger {
 	 * a method to log the error
 	 * @param message the error to log (String)
 	 */
-	public void error(String message) {
+	public void error(String message){
 		System.err.println("ERROR - "+ message);
 	}
 
@@ -63,14 +63,15 @@ public class Logger {
 	 * a method to log the message in the buffered reader if in DEBUG mode
 	 * @param br the buffered reader to log (BufferedReader)
 	 */
-	public void debug(BufferedReader br) {
-		if (this.mode == DEBUG) {
+	public void debug(BufferedReader br){
+		if (this.mode == DEBUG){
 			String headerLine = null;
 			try {
 				while ((headerLine = br.readLine()).length() != 0) {
 					System.out.println(headerLine);
 				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -80,14 +81,15 @@ public class Logger {
 	 * a method to log the message in the buffered reader
 	 * @param br the buffered reader to log (BufferedReader)
 	 */
-	public void info(BufferedReader br) {
+	public void info(BufferedReader br){
 			String headerLine = null;
-			if (this.mode != PRODUCTION) {
+			if (this.mode != PRODUCTION){
 				try {
 					while ((headerLine = br.readLine()).length() != 0) {
 						System.out.println(headerLine);
 					}
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -97,13 +99,14 @@ public class Logger {
 	 * a method to log the error in the buffered reader
 	 * @param br the buffered reader to log (BufferedReader)
 	 */
-	public void error(BufferedReader br) {
+	public void error(BufferedReader br){
 		String headerLine = null;
 		try {
 			while ((headerLine = br.readLine()).length() != 0) {
 				System.err.println(headerLine);
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -112,8 +115,8 @@ public class Logger {
 	 * a method to log the byte array if in debug mode
 	 * @param a: the byte array
 	 */
-	public void debug(byte[] a) {
-		if (this.mode == DEBUG) {
+	public void debug(byte[] a){
+		if (this.mode == DEBUG ){
 			System.out.println(Arrays.toString(a));
 		}
 	}
@@ -122,8 +125,8 @@ public class Logger {
 	 * a method to log the byte array
 	 * @param a: the byte array
 	*/
-	public void info(byte[] a) {
-		if (this.mode != PRODUCTION) {
+	public void info(byte[] a){
+		if(this.mode != PRODUCTION){
 			System.out.println(Arrays.toString(a));
 		}
 	}
@@ -132,7 +135,7 @@ public class Logger {
 	 * a method to log the byte array
 	 * @param a: the byte array
 	*/
-	public void error(byte[] a) {
+	public void error(byte[] a){
 		System.out.println(Arrays.toString(a));
 	}
 

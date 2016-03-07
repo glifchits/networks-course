@@ -28,7 +28,7 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	}
 
 	/**
-	* a public constructors where port and logger are specified
+	* public constructor where port and logger are specified
 	* @param port: the port number
 	* @param logger: the logger to use
 	*/
@@ -37,7 +37,7 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	}
 
 	/**
-	* a public construcotr where port, reliability, logger are specified
+	* public constructor where port, reliability, logger are specified
 	* @param port: the port number
 	* @param reliability: the reliability number
 	* @param logger: the logger to use
@@ -52,7 +52,7 @@ public class UnreliableDatagramSocket extends DatagramSocket {
 	/**
 	* receive a datagram packet
 	* the pack will be dropped depending on the reliability number
-	* @param p: the datagram packet to be used
+	* @param pkt: the datagram packet to be used
 	*/
 	public void receive(DatagramPacket pkt) throws IOException {
 		this.logger.debug("Called `receive()` on datagram socket");
