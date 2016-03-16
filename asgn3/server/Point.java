@@ -38,8 +38,14 @@ public class Point {
 	}
 
 	public String format(){
-		return (this.x + " " + this.y + " " + this.color.getRed()+":"+
-				this.color.getGreen()+":"+ this.color.getBlue());
+		String result = "";
+		if (this.color != null){
+			result = (this.x + " " + this.y + " " + this.color.getRed()+":"+
+					this.color.getGreen()+":"+ this.color.getBlue());
+		}else{
+			result = (this.x + " " + this.y);
+		}
+		return result;
 	}
 	public boolean equals(Point rhs){
 		boolean same = true;

@@ -1,16 +1,11 @@
 package a3;
 
-import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-
-import org.omg.CORBA.portable.InputStream;
 
 public class Request implements Runnable {
 
@@ -18,8 +13,7 @@ public class Request implements Runnable {
 	 *
 	 */
 	final static String CRLF = "\r\n";
-	private Socket socket;
-	private DataOutputStream os;
+	private SpecialSocket socket;
 	private PaintArea data;
 	private Logger logger;
 	private BufferedReader br;
@@ -29,11 +23,10 @@ public class Request implements Runnable {
 	 * @param socket the socket of the request (Socket)
 	 * @param pa the paint area to operate on (PaintArea)
 	 */
-	public Request(Socket socket, PaintArea syn) throws SocketException {
+	public Request(SpecialSocket socket, PaintArea syn) throws SocketException {
 		this.socket = socket;
 		// set the socket to timeout
-		this.socket.setSoTimeout(30000);
-		this.os = null;
+		// this.socket.getSocket().setSoTimeout(30000); // timeouts do not make sense
 		this.data = syn;
 		this.logger = new Logger();
 	}
@@ -44,14 +37,70 @@ public class Request implements Runnable {
 	 * @param pa the paint area to operate on (PaintArea)
 	 * @param logger the logger for the class (Logger)
 	 */
-	public Request(Socket socket, PaintArea pa, Logger logger) throws SocketException {
+	public Request(SpecialSocket socket, PaintArea pa, Logger logger) throws SocketException {
 		this.socket = socket;
-		this.socket.setSoTimeout(30000);
-		this.os = null;
+		// this.socket.getSocket().setSoTimeout(30000); // timeouts do not make sense
 		this.data = pa;
 		this.logger = logger;
 	}
 
+	public void handleInterruptedException(InterruptedException e){
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		lines.add("TODO");
+	}
+
+	public void handleIOException(IOException e){
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		lines.add("TODO");
+	}
+
+	public void handleNumberFormatException(NumberFormatException e) throws IOException{
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		lines.add("PaintProtocol/1.0 400 Bad Request" + CRLF);
+		lines.add("Content-Type: text/html" + CRLF);
+		lines.add(CRLF);
+		lines.add("A point had a number format issue" + CRLF);
+		this.socket.writeLines(lines);
+		this.logger.info("The thread has handled the exception");
+	}
+
+	public void handlePointException(PointException e) throws IOException{
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		this.logger.debug("Point was not valid");
+		lines.add("PaintProtocol/1.0 400 Bad Request" + CRLF);
+		lines.add("Content-Type: text/html" + CRLF);
+		lines.add(CRLF);
+		lines.add("A point did not have the proper format" + CRLF);
+		this.socket.writeLines(lines);
+		this.logger.info("The thread has handled the exception");
+	}
+
+	public void handleIllegalArgumentException(IllegalArgumentException e) throws IOException{
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		this.logger.debug("Color was not valid");
+		lines.add("PaintProtocol/1.0 400 Bad Request" + CRLF);
+		lines.add("Content-Type: text/html" + CRLF);
+		lines.add(CRLF);
+		lines.add("The Color was not valid" + CRLF);
+		this.socket.writeLines(lines);
+		this.logger.info("The thread has handled the exception");		
+	}
+	public void handleInvalidParametersException(InvalidParametersException e) throws IOException{
+		LinkedList <String> lines = new LinkedList <String>();
+		e.printStackTrace();
+		this.logger.debug("Point was not valid");
+		lines.add("PaintProtocol/1.0 400 Bad Request" + CRLF);
+		lines.add("Content-Type: text/html" + CRLF);
+		lines.add(CRLF);
+		lines.add("A point was missing the proper parameters" + CRLF);
+		this.socket.writeLines(lines);
+		this.logger.info("The thread has handled the exception");
+	}
 
 	public void run(){
 		try {
@@ -59,105 +108,116 @@ public class Request implements Runnable {
 		} catch(SocketException e) {
 			this.logger.debug("The socket was closed on the other end");
 		} catch (Exception e) {
-			System.out.println("Error from process");
+			this.logger.error("Error from process");
 		    this.logger.error(e.getMessage());
 		    e.printStackTrace(System.out);
 		}
 	}
 
-	public void getRequest(){
+	public void getRequest() throws IOException{
 		try {
 			LinkedList <Point> lp = this.data.getPoints();
-			this.os.writeBytes("PaintProtocol/1.0 200 Successful"); //  result
-			this.os.writeBytes("Content-Type: text/html"); // content type
-			this.os.writeBytes(CRLF); // header stuff
+			LinkedList <String> lines = new LinkedList <String>();
+			lines.add("PaintProtocol/1.0 200 Successful" + CRLF);
+			lines.add("Content-Type: text/html" + CRLF);
+			lines.add(CRLF);
 			for (Point pt: lp){
-				this.os.writeBytes(pt.format()); // write the all the points
+				lines.add(pt.format()  + CRLF); // write the all the points
 			}
-			this.os.writeBytes(CRLF); // write end of line
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void postRequest(BufferedReader br2){
-		try{
-			boolean done = false;
-			String requestLine = null;
-			StringTokenizer tokens = null;
-			while (!done){
-				requestLine = br2.readLine(); // read in each point
-				tokens = new StringTokenizer(requestLine);
-				if (tokens.countTokens() < 2){ // if less than assume done or messed up line
-					if (tokens.countTokens() == 1 && tokens.nextToken().equals("END")){
-						done = true;
-					}else{
-						throw new InvalidParametersException("Missing argument");
-					}
-				}else{
-					this.data.addPoint(new Point(requestLine));
-				}
-			}
-		}catch (IOException e){
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (PointException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidParametersException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void deleteRequest(BufferedReader br2){
-		try{
-			boolean done = false;
-			String requestLine = null;
-			StringTokenizer tokens = null;
-			while (!done){
-				requestLine = br2.readLine(); // read in each point
-				tokens = new StringTokenizer(requestLine);
-				if (tokens.countTokens() < 2){ // if less than assume done or messed up line
-					if (tokens.countTokens() == 1 && tokens.nextToken().equals("END")){
-						done = true;
-					}else{
-						throw new InvalidParametersException("Missing argument");
-					}
-				}else{
-					this.data.removePoint(new Point(requestLine));
-				}
-			}
-		}catch (IOException e){
+			lines.add(CRLF); // write end of line
+			this.socket.writeLines(lines);
 			
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (PointException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidParametersException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.handleInterruptedException(e);
 		}
 	}
-	
+
+	public void postRequest(BufferedReader br2) throws IOException{
+		LinkedList <String> lines = new LinkedList <String>();
+		try{
+			boolean done = false;
+			String requestLine = null;
+			StringTokenizer tokens = null;
+			LinkedList<Point> points = new LinkedList<Point>();
+			while (!done){
+				requestLine = br2.readLine(); // read in each point
+				tokens = new StringTokenizer(requestLine);
+				if (tokens.countTokens() < 2){ // if less than assume done or messed up line
+					if (tokens.countTokens() == 1 && tokens.nextToken().equals("END")){
+						this.logger.debug("Done processing post of POST request");
+						done = true;
+					}else if (tokens.countTokens() == 0){
+						this.logger.debug("Empty line to assuming end of request");
+						done = true;
+					}else{
+						throw new InvalidParametersException("Missing argument");
+					}
+				}else{
+					points.add(new Point(requestLine)); // add the points to a list
+					
+				}
+			}
+			lines.add("PaintProtocol/1.0 201 Successful" + CRLF);
+			lines.add("Content-Type: text/html" + CRLF);
+			lines.add(CRLF);
+			for (Point point :points){
+				lines.add(point.format() + CRLF); // format the response
+			}
+			lines.add(CRLF);
+			this.data.addPoints(points); // add the points
+		} catch (NumberFormatException e) {
+			this.handleNumberFormatException(e);
+		} catch (InterruptedException e) {
+			this.handleInterruptedException(e);
+		} catch (PointException e) {
+			this.handlePointException(e);
+		} catch (InvalidParametersException e) {
+			this.handleInvalidParametersException(e);
+		} catch (IllegalArgumentException e){
+			this.handleIllegalArgumentException(e);
+		}
+	}
+
+	public void deleteRequest(BufferedReader br2) throws IOException{
+		try{
+			boolean done = false;
+			String requestLine = null;
+			StringTokenizer tokens = null;
+			LinkedList<Point> points = new LinkedList<Point>();
+			while (!done){
+				requestLine = br2.readLine(); // read in each point
+				tokens = new StringTokenizer(requestLine);
+				if (tokens.countTokens() < 2){ // if less than assume done or messed up line
+					if (tokens.countTokens() == 1 && tokens.nextToken().equals("END")){
+						done = true;
+						this.logger.debug("Finished deleteing points");
+					}else if(tokens.countTokens() == 0){
+						this.logger.debug("Empty was given so assuming done request");
+						done = true;
+					}else{
+						throw new InvalidParametersException("Missing argument");
+					}
+				}else{
+					points.add(new Point(requestLine));
+				}
+			}
+			this.data.removePoints(points); // remove all the points
+		}catch (NumberFormatException e) {
+			this.handleNumberFormatException(e);
+		} catch (InterruptedException e) {
+			this.handleInterruptedException(e);
+		} catch (PointException e) {
+			this.handlePointException(e);
+		} catch (InvalidParametersException e) {
+			this.handleInvalidParametersException(e);
+		} catch (IllegalArgumentException e){
+			this.handleIllegalArgumentException(e);
+		}
+	}
+
 	public void processRequest()throws IOException{
 		// Get a reference to the socket's input and output streams
-		InputStream is = (InputStream) this.socket.getInputStream();
-		this.os = new DataOutputStream(this.socket.getOutputStream());
+		java.io.InputStream is = this.socket.getSocket().getInputStream();
 		// Set up input stream filters.
 		this.br = new BufferedReader(new InputStreamReader(is));
 		// Get the request line of the request message.
@@ -188,13 +248,12 @@ public class Request implements Runnable {
 				    this.logger.debug("Closing connection");
 				}else{
 					//  invalid request
-					String statusLine = "PaintProtocol/1.0 405 Method Not Allowed" + CRLF;
-					String contentTypeLine = "Content-Type: text/html" + CRLF;
-					String entityBody = "GET SET REMOVE" + CRLF;
-					this.os.writeBytes(statusLine);
-					this.os.writeBytes(contentTypeLine);
-					this.os.writeBytes(CRLF);
-					this.os.writeBytes(entityBody);
+					LinkedList <String> lines = new LinkedList <String>();
+					lines.add("PaintProtocol/1.0 405 Method Not Allowed" + CRLF);
+					lines.add("Content-Type: text/html" + CRLF);
+					lines.add(CRLF);
+					lines.add("GET SET REMOVE" + CRLF);
+					this.socket.writeLines(lines);
 				}
 			}
 		}finally{
@@ -203,12 +262,12 @@ public class Request implements Runnable {
 	}
 
     public class InvalidParametersException extends Exception{
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -6310136941733882114L;
-	public InvalidParametersException(String message){
-		super(message);
-	}
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = -6310136941733882114L;
+		public InvalidParametersException(String message){
+			super(message);
+		}
     }
 }

@@ -1,52 +1,100 @@
 package a3;
-
+/**
+ * Java Imports
+ */
 import java.awt.Color;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+/**
+ * A class that makes the underlying data structure for the whiteboard server.
+ * It stores individual points and uses a lock to ensure synchronization.
+ * The underlying data structure is a HashMap of points where the Hash is the 
+ * the point x and y coordinates.
+ * @author Dallas Fraser - 110242560
+ * @author George Lifchits - 100691350
+ * @version 1.0
+ * @see Class#Point
+ */
 public class PaintArea {
+	/**
+	 * lock: used to ensure synchronization
+	 * reader: this lock is used if one wants to read the points
+	 * writer: this lock is used if one wants to write a set of points
+	 * logger: used to logging purposes
+	 * data: this is used to store the points
+	 */
 	private final ReentrantReadWriteLock lock;
 	private final Lock reader;
 	private final Lock writer;
 	private Logger logger;
 	private HashMap<String, Point> data;
+	private BlockingQueue<LinkedList<String>> updates;
+	final static String CRLF = "\r\n";
 
-	public PaintArea() {
+	/**
+	 * the default constructor
+	 * 
+	 */
+	public PaintArea(BlockingQueue<LinkedList<String>> updates) {
 		this.logger = new Logger();
 		this.lock = new ReentrantReadWriteLock();
 		this.reader = this.lock.readLock();
 		this.writer = this.lock.writeLock();
 		this.data = new HashMap<String, Point> (20);
+		this.updates = updates;
 	}
 
-	public PaintArea(Logger logger) {
+	/**
+	 * This constructor takes a logger
+	 * 
+	 */
+	public PaintArea(BlockingQueue<LinkedList<String>>updates, Logger logger) {
 		this.logger = logger;
 		this.lock = new ReentrantReadWriteLock();
 		this.reader = this.lock.readLock();
 		this.writer = this.lock.writeLock();
 		this.data = new HashMap<String, Point> (20);
+		this.updates = updates;
 	}
 
-	public void addPoint(Point point) throws InterruptedException{
+	/**
+	 * add a set of points to the data set
+	 * 
+	 */
+	public void addPoints(LinkedList<Point> points) throws InterruptedException{
+		Point current = null;
 		try{
 			if (this.writer.tryLock(3, TimeUnit.SECONDS)){
-				this.data.put(point.toString(), point);
+				for(Point point :points){
+					current = point;
+					this.data.put(point.toString(), point);
+				}
+				LinkedList <String> lines = new LinkedList <String>();
+				lines.add("PaintProtocol/1.0 201 Successful" + CRLF);
+				lines.add("Content-Type: text/html" + CRLF);
+				lines.add(CRLF);
+				for (Point point :points){
+					lines.add(point.format() + CRLF); // format the response
+				}
+				lines.add(CRLF);
+				this.updates.put(lines);
 			}
 		}catch(NullPointerException e){
-			this.logger.debug("Null Pointer when adding point: (" + point.toString() + ")");
+			this.logger.debug("Null Pointer when adding point: (" + current.toString() + ")");
 			this.logger.error(e.getMessage());
 			throw e;
 		}catch (InterruptedException e){
 			this.logger.debug("A timeout has occurred when adding point: ("
-					+ point.toString() + ")");
+					+ current.toString() + ")");
 			throw e;
 		}catch (Exception e){
 			this.logger.debug("An error has occurred when adding point- " +
-								point.toString());
+								current.toString());
 			this.logger.error(e.getMessage());
 		}finally{
 			this.writer.unlock();
@@ -54,13 +102,27 @@ public class PaintArea {
 		return;
 	}
 
-	public void removePoint(Point point)
+	public void removePoints(LinkedList<Point> points)
 			throws NullPointerException , InterruptedException{
+		Point point = null;
 		try{
 			if (this.writer.tryLock(3, TimeUnit.SECONDS)){
-				this.logger.debug("Removing point: " + point.toString());
-				Point p = this.data.remove(point.toString());
-				this.logger.debug("Point: " + p);
+				for(Point current: points){
+					point = current;
+					this.logger.debug("Removing point: " + current.toString());
+					Point p = this.data.remove(current.toString());
+					this.logger.debug("Point: " + p);
+				}
+				LinkedList <String> lines = new LinkedList <String>();
+				lines.add("PaintProtocol/1.0 200 DELETED" + CRLF);
+				lines.add("Content-Type: text/html" + CRLF);
+				lines.add(CRLF);
+				for (Point c :points){
+					point = c;
+					lines.add(c.format() + CRLF); // format the response
+				}
+				lines.add(CRLF);
+				this.updates.put(lines);
 			}
 		} catch(NullPointerException e){
 			this.logger.debug("Null Pointer when removing point: " + point.toString());
@@ -111,7 +173,8 @@ public class PaintArea {
 		 * Test just one thread and basic operations
 		 */
 		Logger lg = new Logger(0);
-		PaintArea pa = new PaintArea(lg);
+		BlockingQueue<LinkedList<String>> bq = new LinkedBlockingQueue<LinkedList<String>>();
+		PaintArea pa = new PaintArea(bq, lg);
 		LinkedList<Point> result = pa.getPoints();
 		Point p;
 		// test empty get
@@ -119,7 +182,9 @@ public class PaintArea {
 			lg.error("Was not initliazed not to empty");
 		}
 		// add an point
-		pa.addPoint(new Point(0, 0, new Color(0)));
+		LinkedList<Point> points = new LinkedList<Point>();
+		points.add(new Point(0, 0, new Color(0)));
+		pa.addPoints(points);
 		result = pa.getPoints();
 		// check the point was added successfully
 		if(result.size() != 1){
@@ -130,7 +195,9 @@ public class PaintArea {
 			lg.error("Point was not correctly");
 		}
 		// add a second point
-		pa.addPoint(new Point(10, 0, new Color(255)));
+		LinkedList<Point> points2 = new LinkedList<Point>();
+		points2.add(new Point(10, 0, new Color(255)));
+		pa.addPoints(points2);
 		result = pa.getPoints();
 		if(result.size () != 2){
 			lg.error("Second point was not added");
@@ -145,8 +212,12 @@ public class PaintArea {
 			lg.error("Second Point was not correctly");
 		}
 		// overwrite a previous point and remove point
-		pa.addPoint(new Point(0, 0, new Color(200)));
-		pa.removePoint(new Point(10, 0, null));
+		points.removeFirst();
+		points.add(new Point(0, 0, new Color(200)));
+		pa.addPoints(points);
+		points2.removeFirst();
+		points2.add(new Point(10, 0, null));
+		pa.removePoints(points2);
 		result = pa.getPoints();
 		if (result.size() != 1){
 			lg.error("There should be only one point: " + result.size());
@@ -156,5 +227,9 @@ public class PaintArea {
 			lg.error("Color was not updated correctly");
 		}
 		lg.info("Completed Testing");
+		LinkedList<String> r = bq.take();
+		for(String s: r){
+			lg.debug(s);
+		}
 	}
 }

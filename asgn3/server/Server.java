@@ -1,9 +1,10 @@
 package a3;
 
-import java.io.* ;
 import java.io.IOException;
 import java.net.* ;
 import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -17,16 +18,16 @@ public class Server {
 	final static String CRLS = "\r\n";
 	private PaintArea data;
 	private Logger logger;
-	private LinkedList<Socket> sockets;
-
+	private BlockingQueue<LinkedList<String>> updates;
+	private Updater updater;
 	/**
 	 * the default constructor
 	 */
 	public Server() {
-		// TODO Auto-generated constructor stub
-		this.data = new PaintArea();
+		this.updates = new LinkedBlockingQueue<LinkedList<String>>();
 		this.logger = new Logger();
-		this.sockets = new LinkedList<Socket>();
+		this.data = new PaintArea(this.updates, this.logger);
+		this.updater = new Updater(this.updates, this.logger);
 	}
 
 	/**
@@ -35,8 +36,9 @@ public class Server {
 	 */
 	public Server(Logger logger){
 	    this.logger = logger;
-		this.data = new PaintArea(this.logger);
-		this.sockets = new LinkedList<Socket>();
+	    this.updates = new LinkedBlockingQueue<LinkedList<String>>();
+		this.data = new PaintArea(this.updates, this.logger);
+		this.updater = new Updater(this.updates, this.logger);
 	}
 
 	/**
@@ -49,12 +51,14 @@ public class Server {
 			@SuppressWarnings("resource")
 			ServerSocket socket = new ServerSocket(port);		
 			// Process service requests in an infinite loop.
+			Thread uthread = new Thread(this.updater);
+			uthread.start();
 			while (true) {
 			    // Listen for a TCP connection request.
-			    Socket connection = socket.accept();
-			    this.sockets.add(connection);
+			    SpecialSocket connection = new SpecialSocket(socket.accept());
 			    // Construct an object to process the HTTP request message.
 			    Request request = new Request(connection, this.data, this.logger);
+			    this.updater.addClient(connection);
 			    // Create a new thread to process the request.
 			    Thread thread = new Thread(request);
 			    // Start the thread.
