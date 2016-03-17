@@ -1,16 +1,29 @@
-package a3;
-
+/**
+ * Java Imports
+ */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-
+/**
+ * The class handles all requests by clients. 
+ * It follows the PaintProtocol outlined.
+ * It handles three types of requests GET, POST, DELETE
+ * @author Dallas Fraser - 110242560
+ * @author George Lifchits - 100691350
+ * @version 1.0
+ * @see Class#PaintArea
+ * @see Class#SpecialSocket
+ */
 public class Request implements Runnable {
 
 	/**
-	 *
+	 * socket: the socket of the client
+	 * data: the global data structure used to store all points
+	 * logger: the logger for the object
+	 * br: how the input is read
 	 */
 	final static String CRLF = "\r\n";
 	private SpecialSocket socket;
@@ -20,8 +33,9 @@ public class Request implements Runnable {
 
 	/**
 	 * the constructor with no logger
-	 * @param socket the socket of the request (Socket)
-	 * @param pa the paint area to operate on (PaintArea)
+	 * @param socket the socket of the request (SpecialSocket)
+	 * @param syn the paint area to operate on (PaintArea)
+	 * @throws SocketException thrown is unable to set timeout
 	 */
 	public Request(SpecialSocket socket, PaintArea syn) throws SocketException {
 		this.socket = socket;
@@ -36,6 +50,7 @@ public class Request implements Runnable {
 	 * @param socket the socket of the request (Socket)
 	 * @param pa the paint area to operate on (PaintArea)
 	 * @param logger the logger for the class (Logger)
+	 * @throws SocketException thrown is unable to set timeout
 	 */
 	public Request(SpecialSocket socket, PaintArea pa, Logger logger) throws SocketException {
 		this.socket = socket;
@@ -43,19 +58,29 @@ public class Request implements Runnable {
 		this.data = pa;
 		this.logger = logger;
 	}
-
+	/**
+	 * handle the InterrupedException
+	 * @param InterruptedException e
+	 */
 	public void handleInterruptedException(InterruptedException e){
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
 		lines.add("TODO");
 	}
-
+	/**
+	 * handles the IOException
+	 * @param IOException e
+	 */
 	public void handleIOException(IOException e){
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
 		lines.add("TODO");
 	}
-
+	/**
+	 * handle the number format exception
+	 * @param NumberFormatException e
+	 * @throws IOException 
+	 */
 	public void handleNumberFormatException(NumberFormatException e) throws IOException{
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
@@ -66,7 +91,11 @@ public class Request implements Runnable {
 		this.socket.writeLines(lines);
 		this.logger.info("The thread has handled the exception");
 	}
-
+	/**
+	 * handles the PointException
+	 * @param PointException e
+	 * @throws IOException
+	 */
 	public void handlePointException(PointException e) throws IOException{
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
@@ -78,7 +107,11 @@ public class Request implements Runnable {
 		this.socket.writeLines(lines);
 		this.logger.info("The thread has handled the exception");
 	}
-
+	/**
+	 * handle the IllegalArgumentException
+	 * @param IllegalArgumentException e
+	 * @throws IOException
+	 */
 	public void handleIllegalArgumentException(IllegalArgumentException e) throws IOException{
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
@@ -90,6 +123,11 @@ public class Request implements Runnable {
 		this.socket.writeLines(lines);
 		this.logger.info("The thread has handled the exception");		
 	}
+	/**
+	 * handles InvalidParameterException
+	 * @param InvalidParameterException e
+	 * @throws IOException
+	 */
 	public void handleInvalidParametersException(InvalidParametersException e) throws IOException{
 		LinkedList <String> lines = new LinkedList <String>();
 		e.printStackTrace();
@@ -101,7 +139,9 @@ public class Request implements Runnable {
 		this.socket.writeLines(lines);
 		this.logger.info("The thread has handled the exception");
 	}
-
+	/**
+	 * the implement method for the thread
+	 */
 	public void run(){
 		try {
 		    this.processRequest();
@@ -113,7 +153,10 @@ public class Request implements Runnable {
 		    e.printStackTrace(System.out);
 		}
 	}
-
+	/**
+	 * handle a get request
+	 * @throws IOException
+	 */
 	public void getRequest() throws IOException{
 		try {
 			LinkedList <Point> lp = this.data.getPoints();
@@ -131,7 +174,11 @@ public class Request implements Runnable {
 			this.handleInterruptedException(e);
 		}
 	}
-
+	/**
+	 * handles a post request
+	 * @param br2: how the method reads the input for the request
+	 * @throws IOException
+	 */
 	public void postRequest(BufferedReader br2) throws IOException{
 		LinkedList <String> lines = new LinkedList <String>();
 		try{
@@ -177,7 +224,11 @@ public class Request implements Runnable {
 			this.handleIllegalArgumentException(e);
 		}
 	}
-
+	/**
+	 * handles a delete request
+	 * @param br2: how the method reads the input for the request
+	 * @throws IOException
+	 */
 	public void deleteRequest(BufferedReader br2) throws IOException{
 		try{
 			boolean done = false;
@@ -214,7 +265,10 @@ public class Request implements Runnable {
 			this.handleIllegalArgumentException(e);
 		}
 	}
-
+	/**
+	 * process requests
+	 * @throws IOException
+	 */
 	public void processRequest()throws IOException{
 		// Get a reference to the socket's input and output streams
 		java.io.InputStream is = this.socket.getSocket().getInputStream();
@@ -260,7 +314,13 @@ public class Request implements Runnable {
 			
 		}
 	}
-
+	/**
+	 * The exception class for invalid parameters
+	 * @author Dallas Fraser - 110242560
+	 * @author George Lifchits - 100691350
+	 * @version 1.0
+	 * @extends Exception
+	 */
     public class InvalidParametersException extends Exception{
 		/**
 		 *

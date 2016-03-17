@@ -1,5 +1,6 @@
-package a3;
-
+/**
+ * Java imports
+ */
 import java.io.IOException;
 import java.net.* ;
 import java.util.LinkedList;
@@ -15,6 +16,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @see Class#PaintArea
  */
 public class Server {
+	/**
+	 * data: the paint area data structure that holds all the points
+	 * logger: the logger used for the class
+	 * updates: the queue used to push updates to all clients
+	 * updater: the thread that sends out all updates
+	 */
 	final static String CRLS = "\r\n";
 	private PaintArea data;
 	private Logger logger;
@@ -42,7 +49,7 @@ public class Server {
 	}
 
 	/**
-	 * 
+	 * used to run the server
 	 * @param port the port number to run on
 	 */
 	public void run(int port) {

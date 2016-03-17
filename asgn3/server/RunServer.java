@@ -1,4 +1,3 @@
-package a3;
 /**
  * Is a static class used to initialize the server.
  * It takes to arugments on the command line
@@ -14,7 +13,6 @@ public final class RunServer {
 	 * @see Logger
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		try{
 			int port = new Integer(args[0]).intValue();
 			Logger logger = null;

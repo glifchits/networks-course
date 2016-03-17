@@ -1,4 +1,3 @@
-package a3;
 /**
  * Java imports
  */

@@ -1,4 +1,3 @@
-package a3;
 /**
  * Java Imports
  */
@@ -38,7 +37,7 @@ public class PaintArea {
 
 	/**
 	 * the default constructor
-	 * 
+	 * @param updates: the queue to add any POST, DELETE updates
 	 */
 	public PaintArea(BlockingQueue<LinkedList<String>> updates) {
 		this.logger = new Logger();
@@ -51,6 +50,8 @@ public class PaintArea {
 
 	/**
 	 * This constructor takes a logger
+	 * @param updates: the queue to add any POST, DELETE updates
+	 * @param logger: the logger with different logging levels
 	 * 
 	 */
 	public PaintArea(BlockingQueue<LinkedList<String>>updates, Logger logger) {
@@ -64,7 +65,10 @@ public class PaintArea {
 
 	/**
 	 * add a set of points to the data set
-	 * 
+	 * After the points are added the request is sent to a queue 
+	 * to send out updates to all clients
+	 * @param points: the list points to add
+	 * @throws InterruptedException: thrown when a timeout occurs
 	 */
 	public void addPoints(LinkedList<Point> points) throws InterruptedException{
 		Point current = null;
@@ -102,6 +106,14 @@ public class PaintArea {
 		return;
 	}
 
+	/**
+	 * removes a list of points
+	 * After the points are removed the request is added to a queue
+	 * to send updates to all the clients
+	 * @params points: the list of points to remove
+	 * @throws NullPointerException: thrown when removing an invalid point
+	 * @throws InterruptedException: thrown when a timeout occurs
+	 */
 	public void removePoints(LinkedList<Point> points)
 			throws NullPointerException , InterruptedException{
 		Point point = null;
@@ -143,6 +155,10 @@ public class PaintArea {
 		return;
 	}
 
+	/**
+	 * get all the points for the paintarea
+	 * @throws InterruptedException: thrown when a timeout occurs
+	 */
 	public LinkedList<Point> getPoints() throws InterruptedException{
 		LinkedList<Point> l = null;
 		try{
