@@ -46,7 +46,8 @@ public class Updater implements Runnable {
 			}
 		}
 		// remove bad sockets
-		for(SpecialSocket client: this.clients){
+		for(SpecialSocket client: remove){
+			this.logger.debug("Removing bad client");
 			this.clients.remove(client);
 		}
 	}
