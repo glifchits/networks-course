@@ -17,6 +17,17 @@ import javax.swing.event.ChangeListener;
 
 public class Painter {
 
+    final static String BTN_CONNECT = "Connect";
+    final static String BTN_DISCONNECT = "Disconnect";
+
+    private static PaintClient controller;
+    private static boolean isConnected;
+
+    public Painter() {
+        isConnected = false;
+        controller = new PaintClient();
+    }
+
     public static class WhiteboardGUI extends JPanel {
         private Logger log;
         private boolean isConnected;
@@ -25,9 +36,6 @@ public class Painter {
         private JButton btnConnect;
 
         public WhiteboardGUI() {
-            this.log = new Logger(Logger.DEBUG);
-            isConnected = false;
-
             setLayout(new BorderLayout(0, 0));
             // Area at the top for setting connection parameters
             JPanel panelConnectionParams = new JPanel();
@@ -42,7 +50,7 @@ public class Painter {
             panelConnectionParams.add(textFieldPortNumber);
             textFieldPortNumber.setColumns(5);
             // Connect/Disconnect Button
-            btnConnect = new JButton("Connect");
+            btnConnect = new JButton(BTN_CONNECT);
             btnConnect.addActionListener(new ConnectDisconnectListener());
             panelConnectionParams.add(btnConnect);
             add(panelConnectionParams, BorderLayout.NORTH);
@@ -56,8 +64,37 @@ public class Painter {
         }
 
         private class ConnectDisconnectListener implements ActionListener {
+            private Logger log;
+
             public void actionPerformed(ActionEvent evt) {
+                log = new Logger(Logger.DEBUG);
                 log.debug("clicked connect/disconnect");
+                if (!isConnected) {
+                    log.debug("establishing connection");
+                    try {
+                        String ipAddress = textFieldIPAddress.getText();
+                        int portNumber = Integer.parseInt(textFieldPortNumber.getText());
+                        log.debug("controller " + controller);
+                        boolean result = controller.connect(ipAddress, portNumber);
+                        btnConnect.setText(BTN_DISCONNECT);
+                        isConnected = true;
+                        log.info("Connected with result: "+result);
+                    } catch (NumberFormatException e) {
+                        log.error("Non-integer port number supplied");
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                    }
+                } else { // is connected already
+                    log.debug("disconnecting");
+                    try {
+                        controller.disconnect();
+                        isConnected = false;
+                        log.debug("disconnected successfully");
+                        btnConnect.setText(BTN_CONNECT);
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                    }
+                }
             }
         }
     }
@@ -72,11 +109,12 @@ public class Painter {
 
     private static void createAndShowGUI() {
         JFrame f = new JFrame("Whiteboard");
-        WhiteboardGUI gui = new WhiteboardGUI();
+        Painter gui = new Painter();
         f.add(new WhiteboardGUI());
         f.pack();
         f.setMinimumSize(new Dimension(480, 200));
         f.setSize(500, 500);
         f.setVisible(true);
     }
+
 }
