@@ -18,12 +18,14 @@ public class PaintClient {
     private Socket socket;
     private DataOutputStream output;
     private BufferedReader input;
+    private Thread thread;
 
     public PaintClient() {
         log = new Logger(Logger.DEBUG);
         socket = null;
         output = null;
         input  = null;
+        thread = null;
     }
 
     /*
@@ -36,6 +38,8 @@ public class PaintClient {
         socket = new Socket(ipAddress, portNumber);
         output = new DataOutputStream(socket.getOutputStream());
         input  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        thread = new Thread(new InputReaderThread(input, log));
+        thread.start();
         return true;
     }
 
@@ -46,6 +50,7 @@ public class PaintClient {
     public void disconnect() throws Exception {
         throwIfNotConnected();
         output.write("QUIT".getBytes());
+        thread.interrupt();
         socket.close();
     }
 
