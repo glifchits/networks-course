@@ -5,12 +5,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import javax.swing.JPanel;
 
-public class PaintPanel extends JPanel 
+public class PaintPanel extends JPanel
 {
    private int pointCount = 0; // count number of points
 
    // array of 10000 java.awt.Point references
-   private Point points[] = new Point[ 10000 ];  
+   private Point points[] = new Point[ 10000 ];
 
    // set up GUI and register mouse event handler
    public PaintPanel()
@@ -19,11 +19,11 @@ public class PaintPanel extends JPanel
       addMouseMotionListener(
 
          new MouseMotionAdapter() // anonymous inner class
-         {  
+         {
             // store drag coordinates and repaint
             public void mouseDragged( MouseEvent event )
             {
-               if ( pointCount < points.length ) 
+               if ( pointCount < points.length )
                {
                   points[ pointCount ] = event.getPoint(); // find point
                   pointCount++; // increment number of points in array
@@ -44,4 +44,3 @@ public class PaintPanel extends JPanel
          g.fillOval( points[ i ].x, points[ i ].y, 4, 4 );
    } // end method paint
 } // end class PaintPanel
-
