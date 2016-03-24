@@ -1,4 +1,3 @@
-package a3;
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -11,9 +10,9 @@ import java.io.IOException;
  */
 public class Logger {
 	private int mode;
-	private static int DEBUG = 0;
-	private static int INFO = 1;
-	private static int PRODUCTION = 2;
+	public static int DEBUG = 0;
+	public static int INFO = 1;
+	public static int PRODUCTION = 2;
 
 	/**
 	 * the default constructor. Initializes the mode to INFO
@@ -29,7 +28,7 @@ public class Logger {
 	public Logger(int mode) {
 		this.mode = mode;
 	}
-	
+
 	/**
 	 * a method to log the information if in DEBUG mode
 	 * @param message the message to log (String)
@@ -39,7 +38,7 @@ public class Logger {
 			System.out.println("DEBUG - " + message);
 		}
 	}
-	
+
 	/**
 	 * a method to log the information only if not PRODUCTION
 	 * @param message the message to log (String)
@@ -49,7 +48,7 @@ public class Logger {
 			System.out.println("INFO - " + message);
 		}
 	}
-	
+
 	/**
 	 * a method to log the error
 	 * @param message the error to log (String)
