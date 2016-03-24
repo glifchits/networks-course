@@ -15,34 +15,25 @@ import java.util.StringTokenizer;
 public class InputReaderThread implements Runnable {
 
     private BufferedReader reader;
-    private boolean shouldKeepReading;
     private Logger log;
 
     public InputReaderThread(BufferedReader reader, Logger log) {
-        this.shouldKeepReading = true;
         this.reader = reader;
         this.log = log;
-        log.debug("reader thread started");
     }
 
     public void run() {
-        log.debug("reader thread: run");
-        try {
-            this.processInput();
-        } catch (Exception e) {
-            this.log.error("Error from process");
-            this.log.error(e.getMessage());
-            e.printStackTrace(System.out);
-        }
-    }
-
-    private void processInput() {
-        log.debug("process input");
-        while (true) {
+        log.debug("Socket reader thread is running");
+        boolean shouldKeepReading = true;
+        while (shouldKeepReading) {
             try {
                 log.debug("waiting for a line...");
                 String line = this.reader.readLine();
                 log.debug("Input read a line: " + line);
+            } catch (SocketException e) {
+                // the socket was closed.
+                // we terminate the while loop, which ends the thread
+                shouldKeepReading = false;
             } catch (IOException e) {
                 log.error(e.toString());
             }
