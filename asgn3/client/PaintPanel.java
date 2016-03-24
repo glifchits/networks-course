@@ -15,13 +15,16 @@ public class PaintPanel extends JPanel {
     private PaintClient client;
 
     // set up GUI and register mouse event handler
-    public PaintPanel() {
+    public PaintPanel(PaintClient client) {
+        this.client = client;
         this.addMouseMotionListener(
             new MouseMotionAdapter() {
                 // store drag coordinates and repaint
                 public void mouseDragged( MouseEvent event ) {
                     if ( pointCount < points.length )  {
-                        points[ pointCount ] = event.getPoint(); // find point
+                        Point point = event.getPoint();
+                        points[ pointCount ] = point;
+                        client.submitPoint(point.x, point.y, 10, 20, 255);
                         pointCount++;
                         repaint();
                     }

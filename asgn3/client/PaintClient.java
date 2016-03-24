@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
  */
 public class PaintClient {
 
+    final static String CRLF = "\r\n";
     private Logger log;
     private Socket socket;
     private DataOutputStream output;
@@ -41,6 +42,27 @@ public class PaintClient {
         thread = new Thread(new InputReaderThread(input, log));
         thread.start();
         return true;
+    }
+
+    public void requestPoints() {
+        // TODO
+    }
+
+    public void submitPoint(int x, int y, int r, int g, int b) {
+        try {
+            String xy = x + " " + y;
+            String rgb = r+":"+g+":"+b;
+            log.debug("submit point " + xy + "   rgb: " + rgb);
+            String postRequest = "POST"+CRLF+ xy + " " + rgb + CRLF;
+            output.write(postRequest.getBytes());
+        } catch (Exception e) {
+            log.error(e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    public void removePoint() {
+        // TODO
     }
 
     /**

@@ -56,7 +56,7 @@ public class Painter {
             add(panelConnectionParams, BorderLayout.NORTH);
 
             // The area in the center for the actual painting
-            PaintPanel paintPanel = new PaintPanel(); // create paint panel
+            PaintPanel paintPanel = new PaintPanel(controller); // create paint panel
             add(paintPanel, BorderLayout.CENTER); // in center
 
             // create a label and place it in SOUTH of BorderLayout
