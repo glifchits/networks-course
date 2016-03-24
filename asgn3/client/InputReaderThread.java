@@ -31,6 +31,7 @@ public class InputReaderThread implements Runnable {
                 String line = this.reader.readLine();
                 log.debug("Input read a line: " + line);
             } catch (SocketException e) {
+                log.debug("Socket exception caught -- stopping reader");
                 // the socket was closed.
                 // we terminate the while loop, which ends the thread
                 shouldKeepReading = false;

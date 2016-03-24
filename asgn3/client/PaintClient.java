@@ -50,7 +50,6 @@ public class PaintClient {
     public void disconnect() throws Exception {
         throwIfNotConnected();
         output.write("QUIT".getBytes());
-        thread.interrupt();
         socket.close();
     }
 
