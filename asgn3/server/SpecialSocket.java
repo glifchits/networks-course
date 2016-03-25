@@ -23,6 +23,9 @@ public class SpecialSocket{
 	 * random colour assigned to this client
 	 */
 	private Color color;
+	final static int MAX  = 255;
+	final static int BASE = 50; // lowest value (RGB)
+	final static int TOP  = 230; // highest value (RGB)
 	/**
 	 * public constructor
 	 * @param socket: the socket to use
@@ -31,7 +34,9 @@ public class SpecialSocket{
 		this.socket = socket;
 		Random rand = new Random();
 		this.color = new Color(
-			rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)
+			BASE+rand.nextInt(MAX-BASE-(TOP-MAX)),
+			BASE+rand.nextInt(MAX-BASE-(TOP-MAX)),
+			BASE+rand.nextInt(MAX-BASE-(TOP-MAX))
 		);
 	}
 	/**
