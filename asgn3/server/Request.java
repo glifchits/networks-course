@@ -26,6 +26,7 @@ public class Request implements Runnable {
 	 * br: how the input is read
 	 */
 	final static String CRLF = "\r\n";
+	final static String POINTPREFIX = "point";
 	private SpecialSocket socket;
 	private PaintArea data;
 	private Logger logger;
@@ -165,7 +166,7 @@ public class Request implements Runnable {
 			lines.add("Content-Type: text/html" + CRLF);
 			lines.add(CRLF);
 			for (Point pt: lp){
-				lines.add(pt.format()  + CRLF); // write the all the points
+				lines.add(POINTPREFIX + " " + pt.format()  + CRLF); // write the all the points
 			}
 			lines.add(CRLF); // write end of line
 			this.socket.writeLines(lines);
@@ -208,7 +209,7 @@ public class Request implements Runnable {
 			lines.add("Content-Type: text/html" + CRLF);
 			lines.add(CRLF);
 			for (Point point :points){
-				lines.add(point.format() + CRLF); // format the response
+				lines.add(POINTPREFIX + " " + point.format() + CRLF); // format the response
 			}
 			lines.add(CRLF);
 			this.data.addPoints(points); // add the points
@@ -306,7 +307,7 @@ public class Request implements Runnable {
 					lines.add("PaintProtocol/1.0 405 Method Not Allowed" + CRLF);
 					lines.add("Content-Type: text/html" + CRLF);
 					lines.add(CRLF);
-					lines.add("GET SET REMOVE" + CRLF);
+					lines.add("Allowed methods: GET SET REMOVE" + CRLF);
 					this.socket.writeLines(lines);
 				}
 			}

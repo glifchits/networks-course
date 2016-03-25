@@ -83,7 +83,7 @@ public class PaintArea {
 				lines.add("Content-Type: text/html" + CRLF);
 				lines.add(CRLF);
 				for (Point point :points){
-					lines.add(point.format() + CRLF); // format the response
+					lines.add("point " + point.format() + CRLF); // format the response
 				}
 				lines.add(CRLF);
 				this.updates.put(lines);
