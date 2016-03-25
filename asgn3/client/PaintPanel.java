@@ -10,9 +10,21 @@ public class PaintPanel extends JPanel {
     private int pointCount = 0; // count number of points
 
     // array of 10000 java.awt.Point references
-    private Point points[] = new Point[ 10000 ];
+    private ColouredPoint points[] = new ColouredPoint[ 10000 ];
 
     private PaintClient client;
+
+    public void addPoint(int x, int y, int r, int g, int b) {
+        addPoint(new ColouredPoint(x, y, r, g, b));
+    }
+
+    public void addPoint(ColouredPoint point) {
+        if (pointCount < points.length) {
+            points[pointCount] = point;
+            pointCount++;
+            repaint();
+        }
+    }
 
     // set up GUI and register mouse event handler
     public PaintPanel(PaintClient client) {
@@ -21,15 +33,16 @@ public class PaintPanel extends JPanel {
             new MouseMotionAdapter() {
                 // store drag coordinates and repaint
                 public void mouseDragged( MouseEvent event ) {
-                    if ( pointCount < points.length )  {
-                        Point point = event.getPoint();
-                        points[ pointCount ] = point;
-                        client.submitPoint(point.x, point.y, 10, 20, 255);
-                        pointCount++;
-                        repaint();
-                    }
+                    // these colours are temporary defaults
+                    int r = 10;
+                    int g = 20;
+                    int b = 255;
+                    ColouredPoint point = new ColouredPoint(event.getPoint(), r, g, b);
+                    client.submitPoint(point);
+                    addPoint(point);
                 }
             }
+
         );
     }
 
@@ -39,7 +52,9 @@ public class PaintPanel extends JPanel {
 
         // draw all points in array
         for ( int i = 0; i < pointCount; i++ ) {
-            g.fillOval( points[ i ].x, points[ i ].y, 4, 4 );
+            ColouredPoint point = points[i];
+            g.setColor(point.getColor());
+            g.fillOval( point.x, point.y, 4, 4 );
         }
     }
 }

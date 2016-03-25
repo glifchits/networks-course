@@ -48,7 +48,13 @@ public class PaintClient {
         // TODO
     }
 
-    public void submitPoint(int x, int y, int r, int g, int b) {
+    public void submitPoint(ColouredPoint point) {
+        int x = point.x;
+        int y = point.y;
+        int r = point.getColor().getRed();
+        int g = point.getColor().getGreen();
+        int b = point.getColor().getBlue();
+
         try {
             String xy = x + " " + y;
             String rgb = r+":"+g+":"+b;
