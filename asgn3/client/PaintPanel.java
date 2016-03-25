@@ -42,7 +42,6 @@ public class PaintPanel extends JPanel {
                     addPoint(point);
                 }
             }
-
         );
     }
 

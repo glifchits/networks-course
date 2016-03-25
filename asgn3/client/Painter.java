@@ -43,12 +43,12 @@ public class Painter {
             panelConnectionParams.add(new JLabel("IP Address"));
             textFieldIPAddress = new JTextField("localhost");
             panelConnectionParams.add(textFieldIPAddress);
-            textFieldIPAddress.setColumns(12);
+            textFieldIPAddress.setColumns(16);
             // Port
             panelConnectionParams.add(new JLabel("Port"));
             textFieldPortNumber = new JTextField("5555");
             panelConnectionParams.add(textFieldPortNumber);
-            textFieldPortNumber.setColumns(5);
+            textFieldPortNumber.setColumns(4);
             // Connect/Disconnect Button
             btnConnect = new JButton(BTN_CONNECT);
             btnConnect.addActionListener(new ConnectDisconnectListener());
@@ -112,7 +112,7 @@ public class Painter {
         Painter gui = new Painter();
         f.add(new WhiteboardGUI());
         f.pack();
-        f.setMinimumSize(new Dimension(480, 200));
+        f.setMinimumSize(new Dimension(500, 200));
         f.setSize(500, 500);
         f.setVisible(true);
     }
