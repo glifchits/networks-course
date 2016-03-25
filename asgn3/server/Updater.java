@@ -4,6 +4,7 @@
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
+import java.awt.Color;
 /**
  * A class that is used to updates all clients
  * It runs as a thread and read updates from a queue
@@ -17,8 +18,9 @@ public class Updater implements Runnable {
 	 * clients: the list of clients to update
 	 * logger: the logger used
 	 */
+	final static String CRLF = "\r\n";
 	private BlockingQueue<LinkedList<String>> updates;
-	private LinkedList<SpecialSocket> clients; 
+	private LinkedList<SpecialSocket> clients;
 	private Logger logger;
 	/**
 	 * the public constructor
@@ -55,8 +57,13 @@ public class Updater implements Runnable {
 	 * adds a client to updater
 	 * @param client: the specia socket for the client
 	 */
-	public synchronized void addClient(SpecialSocket client){
+	public synchronized void addClient(SpecialSocket client) throws IOException {
 		this.clients.add(client);
+		Color col = client.getColor();
+		String resp = "color " + col.getRed() + ":" + col.getGreen() + ":" + col.getBlue() + CRLF;
+		LinkedList<String> lines = new LinkedList<String>();
+		lines.add(resp);
+		client.writeLines(lines);
 	}
 	/**
 	 * run method for the thread

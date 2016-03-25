@@ -1,6 +1,8 @@
 /**
  * Java Imports
  */
+import java.awt.Color;
+import java.util.Random;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -17,18 +19,30 @@ public class SpecialSocket{
 	 * socket: the underlying socket
 	 */
 	private Socket socket;
+	/*
+	 * random colour assigned to this client
+	 */
+	private Color color;
 	/**
 	 * public constructor
 	 * @param socket: the socket to use
 	 */
 	public SpecialSocket(Socket socket) {
 		this.socket = socket;
+		Random rand = new Random();
+		this.color = new Color(
+			rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)
+		);
 	}
 	/**
 	 * getter for socket
 	 */
 	public Socket getSocket(){
 		return this.socket;
+	}
+
+	public Color getColor() {
+		return this.color;
 	}
 	/**
 	 * used to write a request
