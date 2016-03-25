@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.awt.Color;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -17,6 +18,7 @@ public class InputReaderThread implements Runnable {
     final static String PROTOCOL = "PaintProtocol/1.0";
     final static String CONTENT_TYPE = "Content-Type:";
     final static String POINT = "point";
+    final static String SET_COLOR = "color";
     final static int GET = 200;
     final static int POST = 201;
     final static String CRLF = "\r\n";
@@ -92,6 +94,16 @@ public class InputReaderThread implements Runnable {
             log.debug("point " + point.format());
             if (this.panel != null) {
                 this.panel.addPoint(point);
+            }
+        } else if (firstToken.compareTo(SET_COLOR) == 0) {
+            log.debug("setting the colour of this connected client");
+            StringTokenizer rgb = new StringTokenizer(tokens.nextToken(), ":");
+            int r = Integer.parseInt(rgb.nextToken());
+            int g = Integer.parseInt(rgb.nextToken());
+            int b = Integer.parseInt(rgb.nextToken());
+            Color col = new Color(r, g, b);
+            if (this.panel != null) {
+                this.panel.setClientColor(col);
             }
         } else {
             log.debug("unprocessed line");

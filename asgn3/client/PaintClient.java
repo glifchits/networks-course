@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.awt.Color;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -21,6 +22,7 @@ public class PaintClient {
     private BufferedReader input;
     private Thread thread;
     private PaintPanel panel;
+    private Color clientColor;
 
     public PaintClient() {
         log = new Logger(Logger.DEBUG);
@@ -28,6 +30,8 @@ public class PaintClient {
         output = null;
         input  = null;
         thread = null;
+        panel  = null;
+        clientColor = null;
     }
 
     public void setPaintPanel(PaintPanel panel) {

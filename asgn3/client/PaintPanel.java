@@ -1,5 +1,6 @@
 
 import java.awt.Point;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -13,6 +14,7 @@ public class PaintPanel extends JPanel {
     private ColouredPoint points[] = new ColouredPoint[ 10000 ];
 
     private PaintClient client;
+    private Color clientColor;
 
     public void addPoint(int x, int y, int r, int g, int b) {
         addPoint(new ColouredPoint(x, y, r, g, b));
@@ -26,6 +28,14 @@ public class PaintPanel extends JPanel {
         }
     }
 
+    public void setClientColor(Color color) {
+        this.clientColor = color;
+    }
+
+    public Color getClientColor() {
+        return this.clientColor;
+    }
+
     // set up GUI and register mouse event handler
     public PaintPanel(PaintClient client) {
         this.client = client;
@@ -34,10 +44,7 @@ public class PaintPanel extends JPanel {
                 // store drag coordinates and repaint
                 public void mouseDragged( MouseEvent event ) {
                     // these colours are temporary defaults
-                    int r = 10;
-                    int g = 20;
-                    int b = 255;
-                    ColouredPoint point = new ColouredPoint(event.getPoint(), r, g, b);
+                    ColouredPoint point = new ColouredPoint(event.getPoint(), getClientColor());
                     client.submitPoint(point);
                     addPoint(point);
                 }
