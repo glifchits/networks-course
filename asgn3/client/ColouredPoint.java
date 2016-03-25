@@ -37,6 +37,11 @@ public class ColouredPoint {
 	public ColouredPoint(Point point, int r, int g, int b) {
 		this(point.x, point.y, r, g, b);
 	}
+
+	public ColouredPoint(Point point, Color color) {
+		this(point.x, point.y, color);
+	}
+
 	/**
 	 * a constructor that takes a string containing the following format
 	 * x y rr:gg:bb
