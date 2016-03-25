@@ -26,11 +26,13 @@ public class InputReaderThread implements Runnable {
     private Response currentResponse;
     private BufferedReader reader;
     private Logger log;
+    private PaintPanel panel;
 
-    public InputReaderThread(BufferedReader reader, Logger log) {
+    public InputReaderThread(BufferedReader reader, Logger log, PaintPanel p) {
         this.reader = reader;
         this.log = log;
         this.currentResponse = null;
+        this.panel = p;
     }
 
     public void run() {
@@ -88,6 +90,9 @@ public class InputReaderThread implements Runnable {
             int b = Integer.parseInt(rgb.nextToken());
             ColouredPoint point = new ColouredPoint(x, y, r, g, b);
             log.debug("point " + point.format());
+            if (this.panel != null) {
+                this.panel.addPoint(point);
+            }
         } else {
             log.debug("unprocessed line");
             log.debug(" - current response "+currentResponse);

@@ -21,11 +21,14 @@ public class Painter {
     final static String BTN_DISCONNECT = "Disconnect";
 
     private static PaintClient controller;
+    private static PaintPanel paintPanel;
     private static boolean isConnected;
 
     public Painter() {
         isConnected = false;
         controller = new PaintClient();
+        paintPanel = new PaintPanel(controller);
+        controller.setPaintPanel(paintPanel);
     }
 
     public static class WhiteboardGUI extends JPanel {
@@ -56,7 +59,6 @@ public class Painter {
             add(panelConnectionParams, BorderLayout.NORTH);
 
             // The area in the center for the actual painting
-            PaintPanel paintPanel = new PaintPanel(controller); // create paint panel
             add(paintPanel, BorderLayout.CENTER); // in center
 
             // create a label and place it in SOUTH of BorderLayout

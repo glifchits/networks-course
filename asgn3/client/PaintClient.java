@@ -20,6 +20,7 @@ public class PaintClient {
     private DataOutputStream output;
     private BufferedReader input;
     private Thread thread;
+    private PaintPanel panel;
 
     public PaintClient() {
         log = new Logger(Logger.DEBUG);
@@ -27,6 +28,10 @@ public class PaintClient {
         output = null;
         input  = null;
         thread = null;
+    }
+
+    public void setPaintPanel(PaintPanel panel) {
+        this.panel = panel;
     }
 
     /*
@@ -39,10 +44,16 @@ public class PaintClient {
         socket = new Socket(ipAddress, portNumber);
         output = new DataOutputStream(socket.getOutputStream());
         input  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        thread = new Thread(new InputReaderThread(input, log));
+        thread = new Thread(new InputReaderThread(input, log, panel));
         thread.start();
         this.requestPoints();
         return true;
+    }
+
+    private void addPointToPanel(ColouredPoint point) {
+        if (this.panel != null) {
+            this.panel.addPoint(point);
+        }
     }
 
     public void requestPoints() {
