@@ -41,11 +41,18 @@ public class PaintClient {
         input  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         thread = new Thread(new InputReaderThread(input, log));
         thread.start();
+        this.requestPoints();
         return true;
     }
 
     public void requestPoints() {
-        // TODO
+        try {
+            String getRequest = "GET"+CRLF;
+            output.write(getRequest.getBytes());
+        } catch (Exception e) {
+            log.error(e.toString());
+            e.printStackTrace();
+        }
     }
 
     public void submitPoint(ColouredPoint point) {
