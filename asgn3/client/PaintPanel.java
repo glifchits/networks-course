@@ -43,10 +43,12 @@ public class PaintPanel extends JPanel {
             new MouseMotionAdapter() {
                 // store drag coordinates and repaint
                 public void mouseDragged( MouseEvent event ) {
-                    // these colours are temporary defaults
-                    ColouredPoint point = new ColouredPoint(event.getPoint(), getClientColor());
-                    client.submitPoint(point);
-                    addPoint(point);
+                    if (client.isConnected()) {
+                        // these colours are temporary defaults
+                        ColouredPoint point = new ColouredPoint(event.getPoint(), getClientColor());
+                        client.submitPoint(point);
+                        addPoint(point);
+                    }
                 }
             }
         );

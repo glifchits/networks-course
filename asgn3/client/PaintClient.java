@@ -106,8 +106,8 @@ public class PaintClient {
     /**
      * @returns whether this client instance is connected to a server
      */
-    private boolean isConnected() {
-        return socket != null;
+    public boolean isConnected() {
+        return socket != null && socket.isConnected() && !socket.isClosed();
     }
 
     /*
