@@ -24,8 +24,10 @@ public final class RunServer {
 			System.out.println("Server running on port: " + args[0]);
 			Server s = new Server(logger);
 			s.run(port);
-		}catch( Exception e){
+		} catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("No port number given");
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
