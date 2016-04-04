@@ -88,7 +88,7 @@ public class PaintPanel extends JPanel {
     }
 
     // draw oval in a 4-by-4 bounding box at specified location on window
-    public void paintComponent( Graphics g ) {
+    public synchronized void paintComponent( Graphics g ) {
         super.paintComponent( g ); // clears drawing area
         for (ColouredPoint point : this.points.values()) {
             g.setColor(point.getColor());
