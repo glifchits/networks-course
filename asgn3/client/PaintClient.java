@@ -91,7 +91,15 @@ public class PaintClient {
     }
 
     public void deletePoint(Point point) {
-        // TODO
+        String xy = point.x + " " + point.y;
+        try {
+            log.debug("deleting point " + xy);
+            String deleteRequest = "DELETE" + CRLF + xy + CRLF;
+            output.write(deleteRequest.getBytes());
+        } catch (Exception e) {
+            log.error("could not delete point " + e.toString());
+            e.printStackTrace();
+        }
     }
 
     /**
