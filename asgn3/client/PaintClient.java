@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.awt.Color;
+import java.awt.Point;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -56,7 +57,7 @@ public class PaintClient {
 
     private void addPointToPanel(ColouredPoint point) {
         if (this.panel != null) {
-            this.panel.addPoint(point);
+            this.panel.addPointToPanel(point);
         }
     }
 
@@ -89,7 +90,7 @@ public class PaintClient {
         }
     }
 
-    public void removePoint() {
+    public void deletePoint(Point point) {
         // TODO
     }
 

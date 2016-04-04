@@ -93,7 +93,7 @@ public class InputReaderThread implements Runnable {
             ColouredPoint point = new ColouredPoint(x, y, r, g, b);
             log.debug("point " + point.format());
             if (this.panel != null) {
-                this.panel.addPoint(point);
+                this.panel.addPointToPanel(point);
             }
         } else if (firstToken.compareTo(SET_COLOR) == 0) {
             log.debug("setting the colour of this connected client");
