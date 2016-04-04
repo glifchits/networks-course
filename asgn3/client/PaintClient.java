@@ -63,7 +63,7 @@ public class PaintClient {
 
     public void requestPoints() {
         try {
-            String getRequest = "GET"+CRLF;
+            String getRequest = "GET" + CRLF;
             output.write(getRequest.getBytes());
         } catch (Exception e) {
             log.error(e.toString());
@@ -82,7 +82,7 @@ public class PaintClient {
             String xy = x + " " + y;
             String rgb = r+":"+g+":"+b;
             log.debug("submit point " + xy + "   rgb: " + rgb);
-            String postRequest = "POST"+CRLF+ xy + " " + rgb + CRLF;
+            String postRequest = "POST" + CRLF + xy + " " + rgb + CRLF + CRLF;
             output.write(postRequest.getBytes());
         } catch (Exception e) {
             log.error(e.toString());
@@ -94,7 +94,7 @@ public class PaintClient {
         String xy = point.x + " " + point.y;
         try {
             log.debug("deleting point " + xy);
-            String deleteRequest = "DELETE" + CRLF + xy + CRLF;
+            String deleteRequest = "DELETE" + CRLF + xy + CRLF + CRLF;
             output.write(deleteRequest.getBytes());
         } catch (Exception e) {
             log.error("could not delete point " + e.toString());

@@ -131,7 +131,7 @@ public class PaintArea {
 				lines.add(CRLF);
 				for (Point c :points){
 					point = c;
-					lines.add(c.format() + CRLF); // format the response
+					lines.add("point " + c.format() + CRLF); // format the response
 				}
 				lines.add(CRLF);
 				this.updates.put(lines);

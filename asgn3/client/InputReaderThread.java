@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.awt.Color;
+import java.awt.Point;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -19,11 +20,11 @@ public class InputReaderThread implements Runnable {
     final static String CONTENT_TYPE = "Content-Type:";
     final static String POINT = "point";
     final static String SET_COLOR = "color";
-    final static int GET = 200;
+    final static int SUCCESS = 200;
     final static int POST = 201;
     final static String CRLF = "\r\n";
     private enum Response {
-        GET, POST
+        GET, POST, DELETE
     }
     private Response currentResponse;
     private BufferedReader reader;
@@ -63,17 +64,28 @@ public class InputReaderThread implements Runnable {
         }
         int numTokens = tokens.countTokens();
         String firstToken = tokens.nextToken();
-        log.debug("first token " + firstToken);
-        log.debug("line " + line);
-        log.debug("count tokens " + numTokens);
+        log.debug("[line] " + line);
+        log.debug("[first token] " + firstToken);
+        log.debug("[count tokens] " + numTokens);
+        log.debug("[current response] " + currentResponse);
         if (firstToken.compareTo(PROTOCOL) == 0) {
             int statusCode = Integer.parseInt(tokens.nextToken());
-            if (statusCode == GET) {
-                currentResponse = Response.GET;
+            String message = tokens.nextToken();
+            log.debug("status code " + statusCode + ", message " + message);
+            if (statusCode == SUCCESS) {
+                if (message.compareTo("Successful") == 0) {
+                    log.debug("setting current response: GET");
+                    currentResponse = Response.GET;
+                } else if (message.compareTo("DELETED") == 0) {
+                    log.debug("setting current response: DELETE");
+                    currentResponse = Response.DELETE;
+                }
             } else if (statusCode == POST) {
+                log.debug("setting current response: POST");
                 currentResponse = Response.POST;
             } else {
                 // TODO others
+                log.debug("setting current response: null");
                 currentResponse = null;
             }
         }
@@ -83,6 +95,7 @@ public class InputReaderThread implements Runnable {
             // pass
         } else if ((currentResponse == Response.GET || currentResponse == Response.POST)
                     && firstToken.compareTo(POINT) == 0) {
+            log.debug("adding point to panel, currentResponse is " + currentResponse);
             int x = Integer.parseInt(tokens.nextToken());
             int y = Integer.parseInt(tokens.nextToken());
             String rgbString = tokens.nextToken();
@@ -94,6 +107,15 @@ public class InputReaderThread implements Runnable {
             log.debug("point " + point.format());
             if (this.panel != null) {
                 this.panel.addPointToPanel(point);
+            }
+        } else if (currentResponse == Response.DELETE && firstToken.compareTo(POINT) == 0) {
+            log.debug("deleting point from panel");
+            int x = Integer.parseInt(tokens.nextToken());
+            int y = Integer.parseInt(tokens.nextToken());
+            Point point = new Point(x, y);
+            log.debug("delete point " + point.x + " " + point.y);
+            if (this.panel != null) {
+                this.panel.deletePointFromPanel(point);
             }
         } else if (firstToken.compareTo(SET_COLOR) == 0) {
             log.debug("setting the colour of this connected client");
