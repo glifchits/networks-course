@@ -17,13 +17,13 @@ public class PaintPanel extends JPanel {
     private PaintClient client;
     private Color clientColor;
 
-    public void addPointToPanel(ColouredPoint colPoint) {
+    public synchronized void addPointToPanel(ColouredPoint colPoint) {
         String xy = colPoint.x + " " + colPoint.y;
         points.put(xy, colPoint);
         repaint();
     }
 
-    public void deletePointFromPanel(Point point) {
+    public synchronized void deletePointFromPanel(Point point) {
         String xy = point.x + " " + point.y;
         points.remove(xy);
         repaint();
