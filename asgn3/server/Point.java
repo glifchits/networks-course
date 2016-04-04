@@ -47,6 +47,21 @@ public class Point {
 				  				Integer.parseInt(colors[1]),
 				  				Integer.parseInt(colors[2]));
 	}
+
+	/**
+	 * A constructor which explicitly does not parse the colour.
+	 * Constructs a Point where the color = null
+	 * The value of `noColour` does not matter
+	 */
+	public Point(String f, boolean noColour) throws PointException {
+		String[] part = f.split(" ");
+		if (part.length != 2){
+			throw new PointException("Missing parameter on point: "+ f);
+		}
+		this.x = Integer.parseInt(part[0]);
+		this.y = Integer.parseInt(part[1]);
+		this.color = null;
+	}
 	/**
 	 * used to crease the hash of the point
 	 * @return hash: the resulting hash (int)
