@@ -250,7 +250,8 @@ public class Request implements Runnable {
 						throw new InvalidParametersException("Missing argument");
 					}
 				}else{
-					points.add(new Point(requestLine));
+					Point pt = new Point(requestLine, false/* no colour */);
+					points.add(pt);
 				}
 			}
 			this.data.removePoints(points); // remove all the points
