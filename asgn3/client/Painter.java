@@ -62,7 +62,7 @@ public class Painter {
             add(paintPanel, BorderLayout.CENTER); // in center
 
             // create a label and place it in SOUTH of BorderLayout
-            add(new JLabel( "Drag the mouse to draw" ), BorderLayout.SOUTH);
+            add(new JLabel( "Click or drag the mouse to draw. Right-click will delete points" ), BorderLayout.SOUTH);
         }
 
         private class ConnectDisconnectListener implements ActionListener {
