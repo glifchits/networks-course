@@ -117,6 +117,7 @@ public class PaintArea {
 	public void removePoints(LinkedList<Point> points)
 			throws NullPointerException , InterruptedException{
 		Point point = null;
+		LinkedList<Point> deletedPoints = new LinkedList<Point>();
 		try{
 			if (this.writer.tryLock(3, TimeUnit.SECONDS)){
 				for(Point current: points){
@@ -124,12 +125,21 @@ public class PaintArea {
 					this.logger.debug("Removing point: " + current.toString());
 					Point p = this.data.remove(current.toString());
 					this.logger.debug("Point: " + p);
+					if (p != null) {
+						deletedPoints.add(p);
+					} else {
+						this.logger.debug("Point is not in the whiteboard. No Delete " + current.toString());
+					}
+				}
+				if (deletedPoints.size() == 0) {
+					logger.debug("no points were deleted. Sending no response");
+					return;
 				}
 				LinkedList <String> lines = new LinkedList <String>();
 				lines.add("PaintProtocol/1.0 200 DELETED" + CRLF);
 				lines.add("Content-Type: text/html" + CRLF);
 				lines.add(CRLF);
-				for (Point c :points){
+				for (Point c : deletedPoints){
 					point = c;
 					lines.add("point " + c.format() + CRLF); // format the response
 				}
